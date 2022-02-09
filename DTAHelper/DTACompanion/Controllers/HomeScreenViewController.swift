@@ -1,6 +1,6 @@
 //
 //  HomeScreenViewController.swift
-//  DTAHelper
+//  DTACompanion
 //
 //  Created by Kade Walter on 2/6/22.
 //

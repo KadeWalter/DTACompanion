@@ -1,14 +1,14 @@
 //
-//  DTAHelperTests.swift
-//  DTAHelperTests
+//  DTACompanionTests.swift
+//  DTACompanionTests
 //
 //  Created by Kade Walter on 2/6/22.
 //
 
 import XCTest
-@testable import DTAHelper
+@testable import DTACompanion
 
-class DTAHelperTests: XCTestCase {
+class DTACompanionTests: XCTestCase {
 
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.

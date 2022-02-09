@@ -1,13 +1,13 @@
 //
-//  DTAHelperUITestsLaunchTests.swift
-//  DTAHelperUITests
+//  DTACompanionUITestsLaunchTests.swift
+//  DTACompanionUITests
 //
 //  Created by Kade Walter on 2/6/22.
 //
 
 import XCTest
 
-class DTAHelperUITestsLaunchTests: XCTestCase {
+class DTACompanionUITestsLaunchTests: XCTestCase {
 
     override class var runsForEachTargetApplicationUIConfiguration: Bool {
         true
