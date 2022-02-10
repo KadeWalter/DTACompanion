@@ -24,10 +24,9 @@ class HomeScreenViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "DTA Companion"
-        setupTableView()
-        configureDataSource()
-        configureInitialSnapshot(false)
-        configureEditingButton()
+        self.navigationItem.backButtonTitle = "Back"
+        
+        self.initializeViews()
     }
 }
 
@@ -48,8 +47,30 @@ extension HomeScreenViewController: DeleteGameProtocol {
     }
 }
 
-// MARK: - UI Setup Functions
+// MARK: UITableView Delegate Functions
+extension HomeScreenViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        self.tableView.deselectRow(at: indexPath, animated: true)
+        guard let section = self.dataSource.sectionIdentifier(for: indexPath.section), let item = self.dataSource.itemIdentifier(for: indexPath) else { return }
+        switch section {
+        case .createNewTeam:
+            let vc = CreateNewGameViewController()
+            self.show(vc, sender: nil)
+        case .existingTeams:
+            print(item.teamName)
+        }
+    }
+}
+
+// MARK: - View Initialization Functions
 extension HomeScreenViewController {
+    private func initializeViews() {
+        setupTableView()
+        configureDataSource()
+        configureInitialSnapshot(false)
+        configureEditingButton()
+    }
+    
     private func configureInitialSnapshot(_ animated: Bool = true) {
         var initialSnapshot = NSDiffableDataSourceSnapshot<Section, Game>()
         initialSnapshot.appendSections([.createNewTeam, .existingTeams])
@@ -61,7 +82,7 @@ extension HomeScreenViewController {
             // Assign any existing teams to a cell.
             initialSnapshot.appendItems(teams, toSection: .existingTeams)
         }
-
+        
         self.dataSource.apply(initialSnapshot, animatingDifferences: animated)
     }
     
@@ -83,7 +104,7 @@ extension HomeScreenViewController {
             var content = cell.defaultContentConfiguration()
             
             if indexPath.section == 0 {
-                content.text = "Create a new team"
+                content.text = "Create A New Game"
                 cell.accessoryType = .disclosureIndicator
             } else if indexPath.section == 1 {
                 content.text = team.teamName
@@ -108,7 +129,7 @@ extension HomeScreenViewController {
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tableView.topAnchor.constraint(equalTo: view.topAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-            ])
+        ])
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: HomeScreenViewController.reuseIdentifier)
     }
 }
@@ -164,18 +185,6 @@ extension HomeScreenViewController {
     }
 }
 
-// MARK: UITableView Delegate Functions
-extension HomeScreenViewController: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        // TODO: - Send this to a screen
-        let alert = UIAlertController(title: "hello", message: "world", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Ok", style: .default) { _ in
-            self.dismiss(animated: true, completion: nil)
-        })
-        self.navigationController?.present(alert, animated: true)
-    }
-}
-
 // MARK: - Table Modeling Data
 extension HomeScreenViewController {
     enum Section {
@@ -217,6 +226,5 @@ extension HomeScreenViewController {
         func hash(into hasher: inout Hasher) {
             hasher.combine(self.identifier)
         }
-        
     }
 }
