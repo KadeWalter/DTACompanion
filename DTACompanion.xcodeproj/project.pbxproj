@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		191BF0D927B46F15004B2161 /* CreateNewGameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 191BF0D827B46F15004B2161 /* CreateNewGameViewController.swift */; };
+		1940FDCB27B57DB000C69111 /* TextEntryCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1940FDCA27B57DB000C69111 /* TextEntryCollectionViewCell.swift */; };
+		19A216B127B62850000A24FE /* AvailableCharacters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19A216B027B62850000A24FE /* AvailableCharacters.swift */; };
+		19CA3BBB27B612FB008F6826 /* SegmentedControlCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19CA3BBA27B612FB008F6826 /* SegmentedControlCollectionViewCell.swift */; };
 		19ED30A127B0AF840013766B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19ED30A027B0AF840013766B /* AppDelegate.swift */; };
 		19ED30A327B0AF840013766B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19ED30A227B0AF840013766B /* SceneDelegate.swift */; };
 		19ED30AB27B0AF840013766B /* DTACompanion.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 19ED30A927B0AF840013766B /* DTACompanion.xcdatamodeld */; };
@@ -38,6 +41,9 @@
 
 /* Begin PBXFileReference section */
 		191BF0D827B46F15004B2161 /* CreateNewGameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateNewGameViewController.swift; sourceTree = "<group>"; };
+		1940FDCA27B57DB000C69111 /* TextEntryCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEntryCollectionViewCell.swift; sourceTree = "<group>"; };
+		19A216B027B62850000A24FE /* AvailableCharacters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvailableCharacters.swift; sourceTree = "<group>"; };
+		19CA3BBA27B612FB008F6826 /* SegmentedControlCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentedControlCollectionViewCell.swift; sourceTree = "<group>"; };
 		19ED309D27B0AF840013766B /* DTACompanion.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DTACompanion.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		19ED30A027B0AF840013766B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		19ED30A227B0AF840013766B /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -78,6 +84,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1940FDC927B57D7E00C69111 /* Custom Cells */ = {
+			isa = PBXGroup;
+			children = (
+				1940FDCA27B57DB000C69111 /* TextEntryCollectionViewCell.swift */,
+				19CA3BBA27B612FB008F6826 /* SegmentedControlCollectionViewCell.swift */,
+			);
+			path = "Custom Cells";
+			sourceTree = "<group>";
+		};
 		19ED309427B0AF840013766B = {
 			isa = PBXGroup;
 			children = (
@@ -104,6 +119,7 @@
 				19ED30D427B0B09E0013766B /* App Assets */,
 				19ED30D327B0B08B0013766B /* App Delegate */,
 				19ED30D527B0B1040013766B /* Controllers */,
+				1940FDC927B57D7E00C69111 /* Custom Cells */,
 				19ED30A927B0AF840013766B /* DTACompanion.xcdatamodeld */,
 			);
 			path = DTACompanion;
@@ -148,6 +164,7 @@
 		19ED30D527B0B1040013766B /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				19A216B027B62850000A24FE /* AvailableCharacters.swift */,
 				19ED30D627B0B1140013766B /* HomeScreenViewController.swift */,
 				191BF0D827B46F15004B2161 /* CreateNewGameViewController.swift */,
 			);
@@ -288,6 +305,9 @@
 				19ED30D727B0B1140013766B /* HomeScreenViewController.swift in Sources */,
 				19ED30A327B0AF840013766B /* SceneDelegate.swift in Sources */,
 				191BF0D927B46F15004B2161 /* CreateNewGameViewController.swift in Sources */,
+				19CA3BBB27B612FB008F6826 /* SegmentedControlCollectionViewCell.swift in Sources */,
+				19A216B127B62850000A24FE /* AvailableCharacters.swift in Sources */,
+				1940FDCB27B57DB000C69111 /* TextEntryCollectionViewCell.swift in Sources */,
 				19ED30AB27B0AF840013766B /* DTACompanion.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

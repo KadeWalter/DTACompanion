@@ -23,7 +23,48 @@ class CreateNewGameViewController: UIViewController {
 // MARK: - UICollectionView Delegate Functions
 extension CreateNewGameViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-//        collectionView.deselectItem(at: indexPath, animated: true)
+        // TextEntryCollectionViewCell selected:
+        if let cell = collectionView.cellForItem(at: indexPath) as? TextEntryCollectionViewCell, let contentView = cell.contentView as? TextEntryContentView {
+            collectionView.deselectItem(at: indexPath, animated: true)
+            contentView.textField.becomeFirstResponder()
+        }
+    }
+}
+
+// MARK: - TextEntryCellUpdatedDelegate Function
+extension CreateNewGameViewController: TextEntryCellUpdatedDelegate {
+    func textUpdated(withText text: String, cellTag: Int) {
+        switch Row(rawValue: cellTag) {
+        case .teamName:
+            print("Team Name: \(text)")
+            // TO DO - Store this off for creating core data entity.
+        case .name:
+            print("Name: \(text)")
+            // TO DO - Store this off for creating core data entity.
+        default:
+            break
+            // TO DO - use this fatal error when the screen is done.
+//            fatalError("Unknown text field cell text updated.")
+        }
+    }
+}
+
+// MARK: - SegmentedControlCellUpdatedDelegate Function
+extension CreateNewGameViewController: SegmentedControlCellUpdatedDelegate {
+    func segmentedControlIndexChanged(itemAtIndex item: String, cellTag: Int) {
+        switch Row(rawValue: cellTag) {
+        case .difficulty:
+            let diff: Difficulty = item == "Normal" ? .normal : .veteran
+            // TO DO - Store this off for creating core data entity.
+            print(diff)
+        case .numberOfPlayers:
+            let intConvertedForVerification: Int = Int(item) ?? 0
+            // TO DO - Store this off for creating core data entity.
+            // Also update the number of player sections shown on the screen.
+            print("\(intConvertedForVerification)")
+        default:
+            fatalError("Unknown segmented control cell updated.")
+        }
     }
 }
 
@@ -62,10 +103,10 @@ extension CreateNewGameViewController {
 
     private func configureDataSource() {
         // Register dequeuable cells.
-        let basicInfoCell = createBasicInfoListCellRegistration()
+        let textEntryCell = createTextEntryListCellRegistration()
+        let segmentedControlCell = createSegmentedControlListCellRegistration()
         let playerHeaderCell = createPlayerHeaderListCellRegistration()
-        let playerInfoCell = createPlayerInfoListCellRegistration()
-        let scorecardCell = createScorecardListCellRegistration()
+        let disclosureItemCell = createDisclosureItemListCellRegistration()
         let saveCell = createSaveListCellRegistration()
         
         // Configure data source
@@ -74,19 +115,35 @@ extension CreateNewGameViewController {
             
             switch section {
             case .basicInfo:
-                return collectionView.dequeueConfiguredReusableCell(using: basicInfoCell, for: indexPath, item: info.title)
+                if info.rowType == .teamName {
+                    let obj = TextEntryCellInformation(title: info.title, rowType: info.rowType)
+                    return collectionView.dequeueConfiguredReusableCell(using: textEntryCell, for: indexPath, item: obj)
+                } else if info.rowType == .difficulty {
+                    let items: [Int] = [Difficulty.normal.rawValue, Difficulty.veteran.rawValue]
+                    let cellInfo = SegmentedControlCellInformation(title: info.title, rowType: info.rowType, items: items)
+                    return collectionView.dequeueConfiguredReusableCell(using: segmentedControlCell, for: indexPath, item: cellInfo)
+                } else if info.rowType == .numberOfPlayers {
+                    let items = [1, 2, 3, 4]
+                    let cellInfo = SegmentedControlCellInformation(title: info.title, rowType: info.rowType, items: items)
+                    return collectionView.dequeueConfiguredReusableCell(using: segmentedControlCell, for: indexPath, item: cellInfo)
+                }
             case .playerInfo:
                 if info.hasChildren {
                     return collectionView.dequeueConfiguredReusableCell(using: playerHeaderCell, for: indexPath, item: info.title)
                 } else {
-                    return collectionView.dequeueConfiguredReusableCell(using: playerInfoCell, for: indexPath, item: info.title)
+                    if info.rowType == .lootCards {
+                        return collectionView.dequeueConfiguredReusableCell(using: disclosureItemCell, for: indexPath, item: info.title)
+                    } else {
+                        let obj = TextEntryCellInformation(title: info.title, rowType: info.rowType)
+                        return collectionView.dequeueConfiguredReusableCell(using: textEntryCell, for: indexPath, item: obj)
+                    }
                 }
             case .scorecard:
-                return collectionView.dequeueConfiguredReusableCell(using: scorecardCell, for: indexPath, item: info.title)
+                return collectionView.dequeueConfiguredReusableCell(using: disclosureItemCell, for: indexPath, item: info.title)
             case .save:
                 return collectionView.dequeueConfiguredReusableCell(using: saveCell, for: indexPath, item: info.title)
             }
-            
+            return UICollectionViewCell()
         }
     }
     
@@ -135,11 +192,34 @@ extension CreateNewGameViewController {
 
 // MARK: - CollectionView Cell Registration Functions
 extension CreateNewGameViewController {
-    private func createBasicInfoListCellRegistration() -> UICollectionView.CellRegistration<UICollectionViewListCell, String> {
-        return UICollectionView.CellRegistration<UICollectionViewListCell, String> { cell, indexPath, title in
-            var content = UIListContentConfiguration.valueCell()
-            content.text = title
-            cell.contentConfiguration = content
+    private func createTextEntryListCellRegistration() -> UICollectionView.CellRegistration<TextEntryCollectionViewCell, TextEntryCellInformation> {
+        return UICollectionView.CellRegistration<TextEntryCollectionViewCell, TextEntryCellInformation> { cell, indexPath, data in
+            var config = TextEntryContentConfiguration()
+            config.title = data.title
+            config.tag = data.rowType.rawValue
+            config.textChangedDelegate = self
+            cell.contentConfiguration = config
+        }
+    }
+    
+    private func createSegmentedControlListCellRegistration() -> UICollectionView.CellRegistration<SegmentedControlCollectionViewCell, SegmentedControlCellInformation> {
+        return UICollectionView.CellRegistration<SegmentedControlCollectionViewCell, SegmentedControlCellInformation> { cell, indexPath, data in
+            var config = SegmentedControlContentConfiguration()
+            config.title = data.title
+            config.tag = data.rowType.rawValue
+            // Convert the int array in the SegmentedControlCellInformation object into an appropriate string.
+            var segmentItems: [String] = []
+            for item in data.items {
+                if data.rowType == .difficulty {
+                    segmentItems.append(item == 0 ? "Normal" : "Veteran")
+                } else if data.rowType == .numberOfPlayers {
+                    segmentItems.append("\(item)")
+                }
+            }
+            // Assign the items for the segmented control.
+            config.items = segmentItems
+            config.segmentedControlUpdateDelegate = self
+            cell.contentConfiguration = config
         }
     }
     
@@ -152,15 +232,7 @@ extension CreateNewGameViewController {
         }
     }
     
-    private func createPlayerInfoListCellRegistration() -> UICollectionView.CellRegistration<UICollectionViewListCell, String> {
-        return UICollectionView.CellRegistration<UICollectionViewListCell, String> { cell, indexPath, title in
-            var content = cell.defaultContentConfiguration()
-            content.text = title
-            cell.contentConfiguration = content
-        }
-    }
-    
-    private func createScorecardListCellRegistration() -> UICollectionView.CellRegistration<UICollectionViewListCell, String> {
+    private func createDisclosureItemListCellRegistration() -> UICollectionView.CellRegistration<UICollectionViewListCell, String> {
         return UICollectionView.CellRegistration<UICollectionViewListCell, String> { cell, indexPath, title in
             var content = cell.defaultContentConfiguration()
             content.text = title
@@ -189,7 +261,8 @@ extension CreateNewGameViewController {
         case save
     }
     
-    enum Row {
+    enum Row: Int {
+        case unspecified
         case teamName
         case difficulty
         case numberOfPlayers
@@ -198,10 +271,9 @@ extension CreateNewGameViewController {
         case lootCards
         case scorecard
         case save
-        case unspecified
     }
     
-    enum Difficulty {
+    enum Difficulty: Int {
         case normal
         case veteran
     }
@@ -221,5 +293,16 @@ extension CreateNewGameViewController {
         func hash(into hasher: inout Hasher) {
             hasher.combine(self.identifier)
         }
+    }
+    
+    struct TextEntryCellInformation {
+        var title: String
+        var rowType: Row
+    }
+    
+    struct SegmentedControlCellInformation {
+        var title: String
+        var rowType: Row
+        var items: [Int]
     }
 }
