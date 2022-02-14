@@ -19,6 +19,7 @@ struct SegmentedControlContentConfiguration: UIContentConfiguration, Equatable {
     var title: String?
     var items: [String]?
     var tag: Int?
+    var selectedIndex: Int?
     weak var segmentedControlUpdateDelegate: SegmentedControlCellUpdatedDelegate?
     
     func makeContentView() -> UIView & UIContentView {
@@ -30,7 +31,7 @@ struct SegmentedControlContentConfiguration: UIContentConfiguration, Equatable {
     }
     
     static func == (lhs: SegmentedControlContentConfiguration, rhs: SegmentedControlContentConfiguration) -> Bool {
-        return lhs.title == rhs.title
+        return lhs.title == rhs.title && lhs.selectedIndex == rhs.selectedIndex
     }
 }
 
@@ -73,7 +74,11 @@ class SegmentedControlContentView: UIView, UIContentView {
         for item in (configuration.items ?? []).reversed() {
             segmentedControl.insertSegment(withTitle: item, at: 0, animated: false)
         }
-        segmentedControl.selectedSegmentIndex = 0
+        if let selectedIndex = configuration.selectedIndex {
+            segmentedControl.selectedSegmentIndex = selectedIndex
+        } else {
+            segmentedControl.selectedSegmentIndex = 0
+        }
     }
     
     private func initializeViews() {

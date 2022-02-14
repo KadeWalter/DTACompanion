@@ -8,7 +8,7 @@
 import UIKit
 
 protocol TextEntryCellUpdatedDelegate: AnyObject {
-    func textUpdated(withText text: String, cellTag: Int)
+    func textUpdated(withText text: String, cellTag: Int, parentId: Int?)
 }
 
 class TextEntryCollectionViewCell: UICollectionViewListCell, UITextFieldDelegate {
@@ -18,6 +18,9 @@ class TextEntryCollectionViewCell: UICollectionViewListCell, UITextFieldDelegate
 struct TextEntryContentConfiguration: UIContentConfiguration, Equatable {
     var title: String?
     var tag: Int?
+    var textValue: String?
+    var parentId: Int?
+    var isSelectable: Bool = true
     weak var textChangedDelegate: TextEntryCellUpdatedDelegate?
     
     func makeContentView() -> UIView & UIContentView {
@@ -29,7 +32,7 @@ struct TextEntryContentConfiguration: UIContentConfiguration, Equatable {
     }
     
     static func == (lhs: TextEntryContentConfiguration, rhs: TextEntryContentConfiguration) -> Bool {
-        return lhs.title == rhs.title
+        return lhs.textValue == rhs.textValue && lhs.parentId == rhs.parentId && lhs.tag == rhs.tag && lhs.title == rhs.title
     }
 }
 
@@ -67,7 +70,7 @@ class TextEntryContentView: UIView, UIContentView, UITextFieldDelegate {
     
     func textFieldDidEndEditing(_ textField: UITextField) {
         guard let text = textField.text else { return }
-        currentConfig.textChangedDelegate?.textUpdated(withText: text, cellTag: currentConfig.tag ?? 0)
+        currentConfig.textChangedDelegate?.textUpdated(withText: text, cellTag: currentConfig.tag ?? 0, parentId: currentConfig.parentId)
     }
     
     private func apply(configuration: TextEntryContentConfiguration) {
@@ -75,6 +78,8 @@ class TextEntryContentView: UIView, UIContentView, UITextFieldDelegate {
         
         currentConfig = configuration
         titleLabel.text = configuration.title
+        textField.text = configuration.textValue
+        textField.isUserInteractionEnabled = currentConfig.isSelectable
     }
     
     private func initializeViews() {
