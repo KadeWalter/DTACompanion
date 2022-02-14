@@ -31,7 +31,7 @@ struct SegmentedControlContentConfiguration: UIContentConfiguration, Equatable {
     }
     
     static func == (lhs: SegmentedControlContentConfiguration, rhs: SegmentedControlContentConfiguration) -> Bool {
-        return lhs.title == rhs.title && lhs.selectedIndex == rhs.selectedIndex
+        return lhs.title == rhs.title && lhs.selectedIndex == rhs.selectedIndex && lhs.items == rhs.items
     }
 }
 
@@ -71,6 +71,7 @@ class SegmentedControlContentView: UIView, UIContentView {
         currentConfig = configuration
         titleLabel.text = configuration.title
         
+        segmentedControl.removeAllSegments()
         for item in (configuration.items ?? []).reversed() {
             segmentedControl.insertSegment(withTitle: item, at: 0, animated: false)
         }

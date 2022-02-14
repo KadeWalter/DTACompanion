@@ -50,12 +50,6 @@ class CreateNewGameViewController: UIViewController {
             gameInfo.playerData[i] = nil
         }
     }
-    
-    @objc private func switchToggled(_ sender: Any) {
-        guard let uiSwitch = sender as? UISwitch else { return }
-        self.gameInfo.legacyMode = uiSwitch.isOn
-        self.dataSource.updateUIForLegacyMode()
-    }
 }
 
 // MARK: - UICollectionView Delegate Functions
@@ -92,7 +86,7 @@ extension CreateNewGameViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, shouldHighlightItemAt indexPath: IndexPath) -> Bool {
         guard let item = self.dataSource.itemIdentifier(for: indexPath) else { return false }
         switch item.rowType {
-        case .characterPicker, .difficultyPicker, .numberOfPlayers, .name, .teamName, .legacyMode:
+        case .characterPicker, .difficultyPicker, .numberOfPlayers, .legacyMode:
             return false
         default:
             return true
@@ -130,6 +124,14 @@ extension CreateNewGameViewController: SegmentedControlCellUpdatedDelegate {
     }
 }
 
+// MARK: - SwitchListCellUpdatedDelegate Function
+extension CreateNewGameViewController: SwitchListCellUpdatedDelegate {
+    func switchToggled(switchIsOn: Bool) {
+        self.gameInfo.legacyMode = switchIsOn
+        self.dataSource.updateUIForLegacyMode()
+    }
+}
+
 // MARK: - CharacterSelectedDelegate Functions
 extension CreateNewGameViewController: CharacterSelectedDelegate {
     func updateSelectedCharacter(withCharacter character: String, indexPath: IndexPath) {
@@ -138,7 +140,7 @@ extension CreateNewGameViewController: CharacterSelectedDelegate {
             self.updatePlayerData(forPlayerIndex: parentId, character: character)
             var snap = self.dataSource.snapshot()
             snap.reloadItems([charItem])
-            self.dataSource.apply(snap)
+            self.dataSource.apply(snap, animatingDifferences: false)
         }
     }
 }
@@ -151,7 +153,7 @@ extension CreateNewGameViewController: DifficultySelectedDelegate {
             self.gameInfo.difficulty = difficulty
             var snap = self.dataSource.snapshot()
             snap.reloadItems([diffItem])
-            self.dataSource.apply(snap)
+            self.dataSource.apply(snap, animatingDifferences: false)
         }
     }
 }
@@ -196,9 +198,10 @@ extension CreateNewGameViewController {
         // Apply the section for number of players.
         // Because the min is 1, in the initial setup, just show 1 section.
         var playerSnapshot = NSDiffableDataSourceSectionSnapshot<DataSourceItemInformation>()
-        let playerRoot = DataSourceItemInformation(row: .player, hasChildren: true)
-        playerSnapshot.append([playerRoot])
+        var playerRoot = DataSourceItemInformation(row: .player, hasChildren: true)
         let playerId = 0
+        playerRoot.parentId = playerId
+        playerSnapshot.append([playerRoot])
         var name = DataSourceItemInformation(row: .name)
         var character = DataSourceItemInformation(row: .character)
         var lootCards = DataSourceItemInformation(row: .lootCards)
@@ -243,7 +246,7 @@ extension CreateNewGameViewController {
         // Configure data source
         self.dataSource = DataSource(collectionView: collectionView) { collectionView, indexPath, info in
             guard let section = Section(rawValue: indexPath.section) else { fatalError("Unknown Section Type") }
-            let rowTitle = info.rowType == .player ? self.getTitleForRow(rowType: info.rowType, playerId: indexPath.row + 1) : self.getTitleForRow(rowType: info.rowType)
+            var rowTitle = self.getTitleForRow(rowType: info.rowType)
             
             switch section {
             case .basicInfo:
@@ -253,10 +256,15 @@ extension CreateNewGameViewController {
                     obj.value = self.gameInfo.teamName
                     return collectionView.dequeueConfiguredReusableCell(using: textEntryCell, for: indexPath, item: obj)
                 case .legacyMode:
-                    let data: (String, Bool) = (rowTitle, self.gameInfo.legacyMode ?? false)
-                    return collectionView.dequeueConfiguredReusableCell(using: switchCell, for: indexPath, item: data)
+                    let cellInfo = SwitchCellInformation(title: rowTitle, switchIsOn: self.gameInfo.legacyMode)
+                    return collectionView.dequeueConfiguredReusableCell(using: switchCell, for: indexPath, item: cellInfo)
                 case .difficulty:
                     var cellInfo = TextEntryCellInformation(title: rowTitle, rowType: info.rowType)
+                    if let diff = self.gameInfo.difficulty,
+                        ((diff == Difficulty.hardcore.description() || diff == Difficulty.insane.description())
+                         && !self.gameInfo.legacyMode) {
+                        self.gameInfo.difficulty = Difficulty.normal.description()
+                    }
                     cellInfo.value = self.gameInfo.difficulty
                     cellInfo.isSelectable = false
                     return collectionView.dequeueConfiguredReusableCell(using: textEntryCell, for: indexPath, item: cellInfo)
@@ -274,7 +282,9 @@ extension CreateNewGameViewController {
                     break
                 }
             case .playerInfo:
-                if info.hasChildren {
+                if info.hasChildren, info.rowType == .player {
+                    guard let playerId = info.parentId else { return UICollectionViewListCell() }
+                    rowTitle = self.getTitleForRow(rowType: info.rowType, playerId: playerId + 1)
                     return collectionView.dequeueConfiguredReusableCell(using: listHeaderCell, for: indexPath, item: rowTitle)
                 } else {
                     switch info.rowType {
@@ -312,10 +322,12 @@ extension CreateNewGameViewController {
     }
     
     private class DataSource: UICollectionViewDiffableDataSource<Section, DataSourceItemInformation> {
+        // Update the Players section to display the correct amount of players selected in the segmented control.
         func updatePlayerRows(playerCount: Int) {
             var playerSnapshot = NSDiffableDataSourceSectionSnapshot<DataSourceItemInformation>()
             for i in 0..<playerCount {
-                let playerRoot = DataSourceItemInformation(row: .player, hasChildren: true)
+                var playerRoot = DataSourceItemInformation(row: .player, hasChildren: true)
+                playerRoot.parentId = i
                 playerSnapshot.append([playerRoot])
                 var name = DataSourceItemInformation(row: .name)
                 var character = DataSourceItemInformation(row: .character)
@@ -330,46 +342,58 @@ extension CreateNewGameViewController {
             self.apply(playerSnapshot, to: .playerInfo, animatingDifferences: true)
         }
         
+        // Show the character selection picker when the Character cell is clicked.
         func showCharacterSelectionPicker(withIndexPath indexPath: IndexPath) {
             if let idOfSelection = self.itemIdentifier(for: indexPath) {
                 var snapshot = self.snapshot()
                 var info = DataSourceItemInformation(row: .characterPicker)
                 info.parentId = idOfSelection.parentId
                 snapshot.insertItems([info], afterItem: idOfSelection)
-                self.apply(snapshot, animatingDifferences: false)
+                self.apply(snapshot, animatingDifferences: true)
             }
         }
         
+        // Hide the character selection picker when the Character cell is clicked again.
         func removeCharacterSelectionPicker(withIndexPath indexPath: IndexPath) {
             if let idToDelete = self.itemIdentifier(for: indexPath) {
                 var snapshot = self.snapshot()
                 snapshot.deleteItems([idToDelete])
-                self.apply(snapshot)
+                self.apply(snapshot, animatingDifferences: true)
             }
         }
         
+        // Show the difficulty selection picker when the Character cell is clicked.
         func showDifficultySelectionPicker(withIndexPath indexPath: IndexPath) {
             if let idOfSelection = self.itemIdentifier(for: indexPath) {
                 var snapshot = self.snapshot()
                 let pickerView = DataSourceItemInformation(row: .difficultyPicker)
                 snapshot.insertItems([pickerView], afterItem: idOfSelection)
-                self.apply(snapshot, animatingDifferences: false)
+                self.apply(snapshot, animatingDifferences: true)
             }
         }
         
+        // Hide the character selection picker when the Character cell is clicked again.
         func removeDifficultySelectionPicker(withIndexPath indexPath: IndexPath) {
             if let idToDelete = self.itemIdentifier(for: indexPath) {
                 var snapshot = self.snapshot()
                 snapshot.deleteItems([idToDelete])
-                self.apply(snapshot)
+                self.apply(snapshot, animatingDifferences: true)
             }
         }
         
+        // When the legacy mode switch is toggled, update the difficulty items.
         func updateUIForLegacyMode() {
             var newSnapshot = self.snapshot()
-            guard let item = newSnapshot.itemIdentifiers.filter({ $0.rowType == .difficultyPicker }).first else { return }
-            newSnapshot.reloadItems([item])
-            self.apply(newSnapshot, animatingDifferences: true)
+            let allItems = newSnapshot.itemIdentifiers(inSection: .basicInfo)
+            var itemsToReload: [DataSourceItemInformation] = []
+            if let diffItem = allItems.filter({ $0.rowType == .difficulty }).first {
+                itemsToReload.append(diffItem)
+            }
+            if let diffPickerItem = allItems.filter({ $0.rowType == .difficultyPicker }).first {
+                itemsToReload.append(diffPickerItem)
+            }
+            newSnapshot.reloadItems(itemsToReload)
+            self.apply(newSnapshot, animatingDifferences: false)
         }
     }
 }
@@ -399,7 +423,7 @@ extension CreateNewGameViewController {
         case save
     }
     
-    enum Difficulty: Int {
+    public enum Difficulty: Int {
         case normal
         case veteran
         case hardcore
@@ -443,7 +467,7 @@ extension CreateNewGameViewController {
         var numberOfPlayers: Int?
         var playerData: [PlayerInformation?] = Array(repeating: nil, count: 4)
         var scorecard: String?
-        var legacyMode: Bool?
+        var legacyMode: Bool = false
     }
     
     private struct PlayerInformation {
@@ -471,6 +495,11 @@ extension CreateNewGameViewController {
         var rowType: Row
         var items: [Int]
         var selectedIndex: Int = 0
+    }
+    
+    private struct SwitchCellInformation {
+        var title: String
+        var switchIsOn: Bool
     }
     
     private func getTitleForRow(rowType: Row, playerId: Int? = nil) -> String {
@@ -584,30 +613,13 @@ extension CreateNewGameViewController {
         }
     }
     
-    private func createSwitchListCellRegistration() -> UICollectionView.CellRegistration<UICollectionViewListCell, (String, Bool)> {
-        return UICollectionView.CellRegistration<UICollectionViewListCell, (String, Bool)> { cell, indexPath, data in
-            var config = cell.defaultContentConfiguration()
-            config.text = data.0
+    private func createSwitchListCellRegistration() -> UICollectionView.CellRegistration<UICollectionViewListCell, SwitchCellInformation> {
+        return UICollectionView.CellRegistration<UICollectionViewListCell, SwitchCellInformation> { cell, indexPath, data in
+            var config = SwitchListContentConfiguration()
+            config.title = data.title
+            config.switchIsOn = data.switchIsOn
+            config.switchListCellUpdatedDelegate = self
             cell.contentConfiguration = config
-            let enabledSwitch = UISwitch()
-            enabledSwitch.translatesAutoresizingMaskIntoConstraints = false
-            enabledSwitch.isOn = data.1
-            enabledSwitch.addTarget(self, action: #selector(self.switchToggled(_:)), for: .touchUpInside)
-            cell.contentView.addSubview(enabledSwitch)
-            let guide = cell.contentView.layoutMarginsGuide
-            NSLayoutConstraint.activate([
-                enabledSwitch.centerYAnchor.constraint(equalTo: guide.centerYAnchor),
-                enabledSwitch.trailingAnchor.constraint(equalTo: guide.trailingAnchor)
-            ])
-        }
-    }
-    
-    private func createCheckmarkListCellRegistration() -> UICollectionView.CellRegistration<UICollectionViewListCell, (String, Bool)> {
-        return UICollectionView.CellRegistration<UICollectionViewListCell, (String, Bool)> { cell, indexPath, data in
-            var content = cell.defaultContentConfiguration()
-            content.text = data.0
-            cell.contentConfiguration = content
-            cell.accessories = data.1 ? [.checkmark()] : []
         }
     }
     

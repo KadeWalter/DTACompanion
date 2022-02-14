@@ -61,8 +61,6 @@ class DifficultyPickerViewContentView: UIView, UIContentView, UIPickerViewDelega
     }
     
     private func apply(configuration: DifficultyPickerViewContentConfiguration) {
-        guard currentConfig != configuration else { return }
-        
         currentConfig = configuration
         legacyEnabled = currentConfig.legacyMode
         difficulties = setDifficulties()

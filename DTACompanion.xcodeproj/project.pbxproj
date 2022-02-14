@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		191BF0D927B46F15004B2161 /* CreateNewGameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 191BF0D827B46F15004B2161 /* CreateNewGameViewController.swift */; };
 		1931422D27BA0C4300752221 /* DifficultyPickerViewCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1931422C27BA0C4300752221 /* DifficultyPickerViewCollectionViewCell.swift */; };
+		1931423227BAEDB400752221 /* SwitchListCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1931423127BAEDB400752221 /* SwitchListCollectionViewCell.swift */; };
 		1940FDCB27B57DB000C69111 /* TextEntryCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1940FDCA27B57DB000C69111 /* TextEntryCollectionViewCell.swift */; };
 		19A216B127B62850000A24FE /* AvailableCharacters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19A216B027B62850000A24FE /* AvailableCharacters.swift */; };
 		19B2F3DD27B6DB0500EEE513 /* CharacterPickerViewCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19B2F3DC27B6DB0500EEE513 /* CharacterPickerViewCollectionViewCell.swift */; };
@@ -44,6 +45,7 @@
 /* Begin PBXFileReference section */
 		191BF0D827B46F15004B2161 /* CreateNewGameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateNewGameViewController.swift; sourceTree = "<group>"; };
 		1931422C27BA0C4300752221 /* DifficultyPickerViewCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DifficultyPickerViewCollectionViewCell.swift; sourceTree = "<group>"; };
+		1931423127BAEDB400752221 /* SwitchListCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchListCollectionViewCell.swift; sourceTree = "<group>"; };
 		1940FDCA27B57DB000C69111 /* TextEntryCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEntryCollectionViewCell.swift; sourceTree = "<group>"; };
 		19A216B027B62850000A24FE /* AvailableCharacters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvailableCharacters.swift; sourceTree = "<group>"; };
 		19B2F3DC27B6DB0500EEE513 /* CharacterPickerViewCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacterPickerViewCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -95,6 +97,7 @@
 				19CA3BBA27B612FB008F6826 /* SegmentedControlCollectionViewCell.swift */,
 				19B2F3DC27B6DB0500EEE513 /* CharacterPickerViewCollectionViewCell.swift */,
 				1931422C27BA0C4300752221 /* DifficultyPickerViewCollectionViewCell.swift */,
+				1931423127BAEDB400752221 /* SwitchListCollectionViewCell.swift */,
 			);
 			path = "Custom Cells";
 			sourceTree = "<group>";
@@ -314,6 +317,7 @@
 				19B2F3DD27B6DB0500EEE513 /* CharacterPickerViewCollectionViewCell.swift in Sources */,
 				19CA3BBB27B612FB008F6826 /* SegmentedControlCollectionViewCell.swift in Sources */,
 				19A216B127B62850000A24FE /* AvailableCharacters.swift in Sources */,
+				1931423227BAEDB400752221 /* SwitchListCollectionViewCell.swift in Sources */,
 				1940FDCB27B57DB000C69111 /* TextEntryCollectionViewCell.swift in Sources */,
 				1931422D27BA0C4300752221 /* DifficultyPickerViewCollectionViewCell.swift in Sources */,
 				19ED30AB27B0AF840013766B /* DTACompanion.xcdatamodeld in Sources */,
