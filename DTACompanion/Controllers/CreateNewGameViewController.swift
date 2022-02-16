@@ -458,14 +458,14 @@ extension CreateNewGameViewController {
 
 // MARK: - CollectionView Modeling Structs and Enums
 extension CreateNewGameViewController {
-    enum Section: Int, CaseIterable {
+    private enum Section: Int, CaseIterable {
         case basicInfo
         case playerInfo
         case scorecard
         case save
     }
     
-    enum Row: Int {
+    private enum Row: Int {
         case unspecified
         case teamName
         case numberOfPlayers

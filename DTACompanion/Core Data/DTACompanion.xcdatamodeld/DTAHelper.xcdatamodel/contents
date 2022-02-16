@@ -7,7 +7,7 @@
         <attribute name="numberOfPlayers" attributeType="Integer 64" defaultValueString="1" usesScalarValueType="YES"/>
         <attribute name="teamName" attributeType="String"/>
         <relationship name="players" toMany="YES" deletionRule="Nullify" destinationEntity="Player" inverseName="game" inverseEntity="Player"/>
-        <relationship name="sessions" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Game" inverseName="sessions" inverseEntity="Game"/>
+        <relationship name="sessions" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Sessions" inverseName="game" inverseEntity="Sessions"/>
     </entity>
     <entity name="LootCards" representedClassName="LootCards" syncable="YES">
         <attribute name="message" optional="YES" attributeType="String"/>
@@ -29,12 +29,12 @@
         <attribute name="totalScore" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="unclaimedBossLoot" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="unspentGold" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
-        <relationship name="game" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Game"/>
+        <relationship name="game" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Game" inverseName="sessions" inverseEntity="Game"/>
     </entity>
     <elements>
         <element name="Game" positionX="-63" positionY="-18" width="128" height="134"/>
-        <element name="Player" positionX="-54" positionY="27" width="128" height="89"/>
         <element name="LootCards" positionX="-36" positionY="54" width="128" height="89"/>
+        <element name="Player" positionX="-54" positionY="27" width="128" height="89"/>
         <element name="Sessions" positionX="-27" positionY="63" width="128" height="149"/>
     </elements>
 </model>
