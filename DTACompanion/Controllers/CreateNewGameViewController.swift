@@ -50,6 +50,52 @@ class CreateNewGameViewController: UIViewController {
             gameInfo.playerData[i] = nil
         }
     }
+    
+    private func saveGameData() {
+        self.collectionView.resignFirstResponder()
+        
+        // Verify the team name is populated.
+        var teamName: String
+        if self.gameInfo.teamName == nil || (self.gameInfo.teamName ?? "").isEmpty {
+            // Prompt alert for team name missing
+            self.navigationController?.showAlert(withTitle: "Error", message: "Team name is required.")
+            return
+        } else {
+            teamName = self.gameInfo.teamName!
+        }
+        
+        // Verify the difficulty is populated.
+        var diff: Difficulty
+        if self.gameInfo.difficulty == nil {
+            // Prompt alert for team name missing
+            self.navigationController?.showAlert(withTitle: "Error", message: "Difficulty is required.")
+            return
+        } else {
+            diff = self.gameInfo.difficulty!
+        }
+        
+        let numberOfPlayers: Int = self.gameInfo.numberOfPlayers
+        let legacyMode = self.gameInfo.legacyMode
+        
+        // Create player data
+        let players: Set<Player> = savePlayers()
+        if players.isEmpty {
+            self.navigationController?.showAlert(withTitle: "Error", message: "Player data is required.")
+        }
+        
+        // Save the game to core data.
+        Game.saveNewGame(teamName: teamName, numberOfPlayers: numberOfPlayers, legacyMode: legacyMode, difficulty: diff, players: players, dateCreated: Date())
+        self.navigationController?.popViewController(animated: true)
+    }
+    
+    private func savePlayers() -> Set<Player> {
+        var playerData: Set<Player> = []
+        for i in 0..<self.gameInfo.numberOfPlayers {
+            guard let playerInfo = self.gameInfo.playerData[i] else { return [] }
+            playerData.insert(Player.savePlayer(withName: playerInfo.name, character: playerInfo.character))
+        }
+        return playerData
+    }
 }
 
 // MARK: - UICollectionView Delegate Functions
@@ -78,6 +124,8 @@ extension CreateNewGameViewController: UICollectionViewDelegate {
             } else {
                 self.dataSource.showDifficultySelectionPicker(withIndexPath: indexPath)
             }
+        case .save:
+            self.saveGameData()
         default:
             return
         }
@@ -147,7 +195,7 @@ extension CreateNewGameViewController: CharacterSelectedDelegate {
 
 // MARK: - DifficultySelectedDelegate Functions
 extension CreateNewGameViewController: DifficultySelectedDelegate {
-    func updateSelectedDifficulty(withDifficulty difficulty: String, indexPath: IndexPath) {
+    func updateSelectedDifficulty(withDifficulty difficulty: Difficulty, indexPath: IndexPath) {
         DispatchQueue.main.async {
             guard let diffItem = self.dataSource.itemIdentifier(for: IndexPath(row: indexPath.row - 1, section: indexPath.section)) else { return }
             self.gameInfo.difficulty = difficulty
@@ -261,11 +309,11 @@ extension CreateNewGameViewController {
                 case .difficulty:
                     var cellInfo = TextEntryCellInformation(title: rowTitle, rowType: info.rowType)
                     if let diff = self.gameInfo.difficulty,
-                        ((diff == Difficulty.hardcore.description() || diff == Difficulty.insane.description())
-                         && !self.gameInfo.legacyMode) {
-                        self.gameInfo.difficulty = Difficulty.normal.description()
+                       ((diff == Difficulty.hardcore || diff == Difficulty.insane)
+                        && !self.gameInfo.legacyMode) {
+                        self.gameInfo.difficulty = Difficulty.normal
                     }
-                    cellInfo.value = self.gameInfo.difficulty
+                    cellInfo.value = self.gameInfo.difficulty?.rawValue
                     cellInfo.isSelectable = false
                     return collectionView.dequeueConfiguredReusableCell(using: textEntryCell, for: indexPath, item: cellInfo)
                 case .difficultyPicker:
@@ -273,10 +321,8 @@ extension CreateNewGameViewController {
                 case .numberOfPlayers:
                     let items = [1, 2, 3, 4]
                     var cellInfo = SegmentedControlCellInformation(title: rowTitle, rowType: info.rowType, items: items)
-                    if var playerIndex = self.gameInfo.numberOfPlayers {
-                        playerIndex = playerIndex - 1
-                        cellInfo.selectedIndex = playerIndex
-                    }
+                    let playerIndex = self.gameInfo.numberOfPlayers - 1
+                    cellInfo.selectedIndex = playerIndex
                     return collectionView.dequeueConfiguredReusableCell(using: segmentedControlCell, for: indexPath, item: cellInfo)
                 default:
                     break
@@ -324,76 +370,88 @@ extension CreateNewGameViewController {
     private class DataSource: UICollectionViewDiffableDataSource<Section, DataSourceItemInformation> {
         // Update the Players section to display the correct amount of players selected in the segmented control.
         func updatePlayerRows(playerCount: Int) {
-            var playerSnapshot = NSDiffableDataSourceSectionSnapshot<DataSourceItemInformation>()
-            for i in 0..<playerCount {
-                var playerRoot = DataSourceItemInformation(row: .player, hasChildren: true)
-                playerRoot.parentId = i
-                playerSnapshot.append([playerRoot])
-                var name = DataSourceItemInformation(row: .name)
-                var character = DataSourceItemInformation(row: .character)
-                var lootCards = DataSourceItemInformation(row: .lootCards)
-                // Assign the parent id's
-                name.parentId = i
-                character.parentId = i
-                lootCards.parentId = i
-                let playerInformationRows = [name, character, lootCards]
-                playerSnapshot.append(playerInformationRows, to: playerRoot)
+            DispatchQueue.main.async {
+                var playerSnapshot = NSDiffableDataSourceSectionSnapshot<DataSourceItemInformation>()
+                for i in 0..<playerCount {
+                    var playerRoot = DataSourceItemInformation(row: .player, hasChildren: true)
+                    playerRoot.parentId = i
+                    playerSnapshot.append([playerRoot])
+                    var name = DataSourceItemInformation(row: .name)
+                    var character = DataSourceItemInformation(row: .character)
+                    var lootCards = DataSourceItemInformation(row: .lootCards)
+                    // Assign the parent id's
+                    name.parentId = i
+                    character.parentId = i
+                    lootCards.parentId = i
+                    let playerInformationRows = [name, character, lootCards]
+                    playerSnapshot.append(playerInformationRows, to: playerRoot)
+                }
+                self.apply(playerSnapshot, to: .playerInfo, animatingDifferences: true)
             }
-            self.apply(playerSnapshot, to: .playerInfo, animatingDifferences: true)
         }
         
         // Show the character selection picker when the Character cell is clicked.
         func showCharacterSelectionPicker(withIndexPath indexPath: IndexPath) {
-            if let idOfSelection = self.itemIdentifier(for: indexPath) {
-                var snapshot = self.snapshot()
-                var info = DataSourceItemInformation(row: .characterPicker)
-                info.parentId = idOfSelection.parentId
-                snapshot.insertItems([info], afterItem: idOfSelection)
-                self.apply(snapshot, animatingDifferences: true)
+            DispatchQueue.main.async {
+                if let idOfSelection = self.itemIdentifier(for: indexPath) {
+                    var snapshot = self.snapshot()
+                    var info = DataSourceItemInformation(row: .characterPicker)
+                    info.parentId = idOfSelection.parentId
+                    snapshot.insertItems([info], afterItem: idOfSelection)
+                    self.apply(snapshot, animatingDifferences: true)
+                }
             }
         }
         
         // Hide the character selection picker when the Character cell is clicked again.
         func removeCharacterSelectionPicker(withIndexPath indexPath: IndexPath) {
-            if let idToDelete = self.itemIdentifier(for: indexPath) {
-                var snapshot = self.snapshot()
-                snapshot.deleteItems([idToDelete])
-                self.apply(snapshot, animatingDifferences: true)
+            DispatchQueue.main.async {
+                if let idToDelete = self.itemIdentifier(for: indexPath) {
+                    var snapshot = self.snapshot()
+                    snapshot.deleteItems([idToDelete])
+                    self.apply(snapshot, animatingDifferences: true)
+                }
             }
         }
         
         // Show the difficulty selection picker when the Character cell is clicked.
         func showDifficultySelectionPicker(withIndexPath indexPath: IndexPath) {
-            if let idOfSelection = self.itemIdentifier(for: indexPath) {
-                var snapshot = self.snapshot()
-                let pickerView = DataSourceItemInformation(row: .difficultyPicker)
-                snapshot.insertItems([pickerView], afterItem: idOfSelection)
-                self.apply(snapshot, animatingDifferences: true)
+            DispatchQueue.main.async {
+                if let idOfSelection = self.itemIdentifier(for: indexPath) {
+                    var snapshot = self.snapshot()
+                    let pickerView = DataSourceItemInformation(row: .difficultyPicker)
+                    snapshot.insertItems([pickerView], afterItem: idOfSelection)
+                    self.apply(snapshot, animatingDifferences: true)
+                }
             }
         }
         
         // Hide the character selection picker when the Character cell is clicked again.
         func removeDifficultySelectionPicker(withIndexPath indexPath: IndexPath) {
-            if let idToDelete = self.itemIdentifier(for: indexPath) {
-                var snapshot = self.snapshot()
-                snapshot.deleteItems([idToDelete])
-                self.apply(snapshot, animatingDifferences: true)
+            DispatchQueue.main.async {
+                if let idToDelete = self.itemIdentifier(for: indexPath) {
+                    var snapshot = self.snapshot()
+                    snapshot.deleteItems([idToDelete])
+                    self.apply(snapshot, animatingDifferences: true)
+                }
             }
         }
         
         // When the legacy mode switch is toggled, update the difficulty items.
         func updateUIForLegacyMode() {
-            var newSnapshot = self.snapshot()
-            let allItems = newSnapshot.itemIdentifiers(inSection: .basicInfo)
-            var itemsToReload: [DataSourceItemInformation] = []
-            if let diffItem = allItems.filter({ $0.rowType == .difficulty }).first {
-                itemsToReload.append(diffItem)
+            DispatchQueue.main.async {
+                var newSnapshot = self.snapshot()
+                let allItems = newSnapshot.itemIdentifiers(inSection: .basicInfo)
+                var itemsToReload: [DataSourceItemInformation] = []
+                if let diffItem = allItems.filter({ $0.rowType == .difficulty }).first {
+                    itemsToReload.append(diffItem)
+                }
+                if let diffPickerItem = allItems.filter({ $0.rowType == .difficultyPicker }).first {
+                    itemsToReload.append(diffPickerItem)
+                }
+                newSnapshot.reloadItems(itemsToReload)
+                self.apply(newSnapshot, animatingDifferences: false)
             }
-            if let diffPickerItem = allItems.filter({ $0.rowType == .difficultyPicker }).first {
-                itemsToReload.append(diffPickerItem)
-            }
-            newSnapshot.reloadItems(itemsToReload)
-            self.apply(newSnapshot, animatingDifferences: false)
         }
     }
 }
@@ -423,26 +481,6 @@ extension CreateNewGameViewController {
         case save
     }
     
-    public enum Difficulty: Int {
-        case normal
-        case veteran
-        case hardcore
-        case insane
-
-        func description() -> String {
-            switch self {
-            case .normal:
-                return "Normal"
-            case .veteran:
-                return "Veteran"
-            case .hardcore:
-                return "Hardcore"
-            case .insane:
-                return "Insane"
-            }
-        }
-    }
-    
     private struct DataSourceItemInformation: Hashable {
         let rowType: Row
         let hasChildren: Bool
@@ -463,11 +501,11 @@ extension CreateNewGameViewController {
     
     private struct GameInformation {
         var teamName: String?
-        var difficulty: String?
-        var numberOfPlayers: Int?
+        var difficulty: Difficulty?
         var playerData: [PlayerInformation?] = Array(repeating: nil, count: 4)
         var scorecard: String?
-        var legacyMode: Bool = false
+        var numberOfPlayers: Int = 1 // Minimum number of players is 1 by default.
+        var legacyMode: Bool = false // Legacy mode is off by default.
     }
     
     private struct PlayerInformation {
@@ -568,7 +606,7 @@ extension CreateNewGameViewController {
             }
             // Assign the items for the segmented control.
             config.items = segmentItems
-        
+            
             config.segmentedControlUpdateDelegate = self
             cell.contentConfiguration = config
         }

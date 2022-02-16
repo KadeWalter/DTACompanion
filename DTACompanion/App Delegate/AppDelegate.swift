@@ -14,6 +14,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         return true
     }
+    
+    // sharedAppDelegate returns the app delegate on the appropriate thread.
+    static var sharedAppDelegate: AppDelegate? {
+        if Thread.isMainThread {
+            return UIApplication.shared.delegate as? AppDelegate
+        }
+        
+        var appDelegate: AppDelegate?
+        DispatchQueue.main.sync {
+            appDelegate = UIApplication.shared.delegate as? AppDelegate
+        }
+        return appDelegate
+    }
 
     // MARK: UISceneSession Lifecycle
     func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {

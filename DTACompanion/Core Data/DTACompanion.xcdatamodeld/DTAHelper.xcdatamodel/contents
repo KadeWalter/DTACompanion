@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="19574" systemVersion="21C52" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="Game" representedClassName="Game" syncable="YES">
+        <attribute name="dateCreated" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="difficulty" optional="YES" attributeType="String"/>
+        <attribute name="legacyMode" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="numberOfPlayers" attributeType="Integer 64" defaultValueString="1" usesScalarValueType="YES"/>
+        <attribute name="teamName" attributeType="String"/>
+        <relationship name="players" toMany="YES" deletionRule="Nullify" destinationEntity="Player" inverseName="game" inverseEntity="Player"/>
+        <relationship name="sessions" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Game" inverseName="sessions" inverseEntity="Game"/>
+    </entity>
+    <entity name="LootCards" representedClassName="LootCards" syncable="YES">
+        <attribute name="message" optional="YES" attributeType="String"/>
+        <attribute name="rarity" optional="YES" attributeType="String"/>
+        <attribute name="title" optional="YES" attributeType="String"/>
+        <relationship name="player" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Player" inverseName="lootCards" inverseEntity="Player"/>
+    </entity>
+    <entity name="Player" representedClassName="Player" syncable="YES">
+        <attribute name="character" attributeType="String"/>
+        <attribute name="name" attributeType="String"/>
+        <relationship name="game" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Game" inverseName="players" inverseEntity="Game"/>
+        <relationship name="lootCards" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LootCards" inverseName="player" inverseEntity="LootCards"/>
+    </entity>
+    <entity name="Sessions" representedClassName="Sessions" syncable="YES">
+        <attribute name="fullExploration" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="remainingSalves" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="scenarioNumber" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="scenarioScore" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="totalScore" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="unclaimedBossLoot" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="unspentGold" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="game" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Game"/>
+    </entity>
+    <elements>
+        <element name="Game" positionX="-63" positionY="-18" width="128" height="134"/>
+        <element name="Player" positionX="-54" positionY="27" width="128" height="89"/>
+        <element name="LootCards" positionX="-36" positionY="54" width="128" height="89"/>
+        <element name="Sessions" positionX="-27" positionY="63" width="128" height="149"/>
+    </elements>
+</model>

@@ -11,9 +11,15 @@
 		1931422D27BA0C4300752221 /* DifficultyPickerViewCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1931422C27BA0C4300752221 /* DifficultyPickerViewCollectionViewCell.swift */; };
 		1931423227BAEDB400752221 /* SwitchListCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1931423127BAEDB400752221 /* SwitchListCollectionViewCell.swift */; };
 		1940FDCB27B57DB000C69111 /* TextEntryCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1940FDCA27B57DB000C69111 /* TextEntryCollectionViewCell.swift */; };
+		198BD17A27BC393A0056FAC6 /* GenericNSManagedObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 198BD17927BC393A0056FAC6 /* GenericNSManagedObject.swift */; };
 		19A216B127B62850000A24FE /* AvailableCharacters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19A216B027B62850000A24FE /* AvailableCharacters.swift */; };
 		19B2F3DD27B6DB0500EEE513 /* CharacterPickerViewCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19B2F3DC27B6DB0500EEE513 /* CharacterPickerViewCollectionViewCell.swift */; };
 		19CA3BBB27B612FB008F6826 /* SegmentedControlCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19CA3BBA27B612FB008F6826 /* SegmentedControlCollectionViewCell.swift */; };
+		19CAB10527BC416C001D21F6 /* UINavigationControllerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19CAB10427BC416C001D21F6 /* UINavigationControllerExtension.swift */; };
+		19CAB10727BC43A6001D21F6 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19CAB10627BC43A6001D21F6 /* Player.swift */; };
+		19CAB10927BC458E001D21F6 /* Difficulty.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19CAB10827BC458E001D21F6 /* Difficulty.swift */; };
+		19CAB10D27BC92A7001D21F6 /* Rarity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19CAB10C27BC92A7001D21F6 /* Rarity.swift */; };
+		19DB18AA27BC1A9C0076AE52 /* Game.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19DB18A927BC1A9C0076AE52 /* Game.swift */; };
 		19ED30A127B0AF840013766B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19ED30A027B0AF840013766B /* AppDelegate.swift */; };
 		19ED30A327B0AF840013766B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19ED30A227B0AF840013766B /* SceneDelegate.swift */; };
 		19ED30AB27B0AF840013766B /* DTACompanion.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 19ED30A927B0AF840013766B /* DTACompanion.xcdatamodeld */; };
@@ -47,9 +53,15 @@
 		1931422C27BA0C4300752221 /* DifficultyPickerViewCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DifficultyPickerViewCollectionViewCell.swift; sourceTree = "<group>"; };
 		1931423127BAEDB400752221 /* SwitchListCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchListCollectionViewCell.swift; sourceTree = "<group>"; };
 		1940FDCA27B57DB000C69111 /* TextEntryCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEntryCollectionViewCell.swift; sourceTree = "<group>"; };
+		198BD17927BC393A0056FAC6 /* GenericNSManagedObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericNSManagedObject.swift; sourceTree = "<group>"; };
 		19A216B027B62850000A24FE /* AvailableCharacters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvailableCharacters.swift; sourceTree = "<group>"; };
 		19B2F3DC27B6DB0500EEE513 /* CharacterPickerViewCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacterPickerViewCollectionViewCell.swift; sourceTree = "<group>"; };
 		19CA3BBA27B612FB008F6826 /* SegmentedControlCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentedControlCollectionViewCell.swift; sourceTree = "<group>"; };
+		19CAB10427BC416C001D21F6 /* UINavigationControllerExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UINavigationControllerExtension.swift; sourceTree = "<group>"; };
+		19CAB10627BC43A6001D21F6 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
+		19CAB10827BC458E001D21F6 /* Difficulty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Difficulty.swift; sourceTree = "<group>"; };
+		19CAB10C27BC92A7001D21F6 /* Rarity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Rarity.swift; sourceTree = "<group>"; };
+		19DB18A927BC1A9C0076AE52 /* Game.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Game.swift; sourceTree = "<group>"; };
 		19ED309D27B0AF840013766B /* DTACompanion.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DTACompanion.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		19ED30A027B0AF840013766B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		19ED30A227B0AF840013766B /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -102,6 +114,34 @@
 			path = "Custom Cells";
 			sourceTree = "<group>";
 		};
+		19CAB10A27BC4600001D21F6 /* Public Enums */ = {
+			isa = PBXGroup;
+			children = (
+				19CAB10827BC458E001D21F6 /* Difficulty.swift */,
+				19CAB10C27BC92A7001D21F6 /* Rarity.swift */,
+			);
+			path = "Public Enums";
+			sourceTree = "<group>";
+		};
+		19CAB10B27BC816C001D21F6 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				19CAB10427BC416C001D21F6 /* UINavigationControllerExtension.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		19DB18A827BC1A030076AE52 /* Core Data */ = {
+			isa = PBXGroup;
+			children = (
+				19ED30A927B0AF840013766B /* DTACompanion.xcdatamodeld */,
+				198BD17927BC393A0056FAC6 /* GenericNSManagedObject.swift */,
+				19DB18A927BC1A9C0076AE52 /* Game.swift */,
+				19CAB10627BC43A6001D21F6 /* Player.swift */,
+			);
+			path = "Core Data";
+			sourceTree = "<group>";
+		};
 		19ED309427B0AF840013766B = {
 			isa = PBXGroup;
 			children = (
@@ -125,11 +165,12 @@
 		19ED309F27B0AF840013766B /* DTACompanion */ = {
 			isa = PBXGroup;
 			children = (
+				19CAB10A27BC4600001D21F6 /* Public Enums */,
 				19ED30D427B0B09E0013766B /* App Assets */,
 				19ED30D327B0B08B0013766B /* App Delegate */,
 				19ED30D527B0B1040013766B /* Controllers */,
 				1940FDC927B57D7E00C69111 /* Custom Cells */,
-				19ED30A927B0AF840013766B /* DTACompanion.xcdatamodeld */,
+				19DB18A827BC1A030076AE52 /* Core Data */,
 			);
 			path = DTACompanion;
 			sourceTree = "<group>";
@@ -173,6 +214,7 @@
 		19ED30D527B0B1040013766B /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				19CAB10B27BC816C001D21F6 /* Extensions */,
 				19A216B027B62850000A24FE /* AvailableCharacters.swift */,
 				19ED30D627B0B1140013766B /* HomeScreenViewController.swift */,
 				191BF0D827B46F15004B2161 /* CreateNewGameViewController.swift */,
@@ -313,13 +355,19 @@
 				19ED30A127B0AF840013766B /* AppDelegate.swift in Sources */,
 				19ED30D727B0B1140013766B /* HomeScreenViewController.swift in Sources */,
 				19ED30A327B0AF840013766B /* SceneDelegate.swift in Sources */,
+				19CAB10527BC416C001D21F6 /* UINavigationControllerExtension.swift in Sources */,
 				191BF0D927B46F15004B2161 /* CreateNewGameViewController.swift in Sources */,
+				198BD17A27BC393A0056FAC6 /* GenericNSManagedObject.swift in Sources */,
 				19B2F3DD27B6DB0500EEE513 /* CharacterPickerViewCollectionViewCell.swift in Sources */,
 				19CA3BBB27B612FB008F6826 /* SegmentedControlCollectionViewCell.swift in Sources */,
+				19CAB10927BC458E001D21F6 /* Difficulty.swift in Sources */,
 				19A216B127B62850000A24FE /* AvailableCharacters.swift in Sources */,
+				19DB18AA27BC1A9C0076AE52 /* Game.swift in Sources */,
+				19CAB10D27BC92A7001D21F6 /* Rarity.swift in Sources */,
 				1931423227BAEDB400752221 /* SwitchListCollectionViewCell.swift in Sources */,
 				1940FDCB27B57DB000C69111 /* TextEntryCollectionViewCell.swift in Sources */,
 				1931422D27BA0C4300752221 /* DifficultyPickerViewCollectionViewCell.swift in Sources */,
+				19CAB10727BC43A6001D21F6 /* Player.swift in Sources */,
 				19ED30AB27B0AF840013766B /* DTACompanion.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -505,7 +553,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = KadeWalter.DTACompanion;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kadewalter.DTACompanion;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_TREAT_WARNINGS_AS_ERRORS = YES;
@@ -535,7 +583,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = KadeWalter.DTACompanion;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kadewalter.DTACompanion;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_TREAT_WARNINGS_AS_ERRORS = YES;

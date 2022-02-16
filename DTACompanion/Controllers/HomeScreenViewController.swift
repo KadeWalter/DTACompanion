@@ -17,9 +17,14 @@ class HomeScreenViewController: UIViewController {
     
     private let tableView = UITableView(frame: .zero, style: .insetGrouped)
     private var dataSource: DataSource!
+    private var allGames: [Game] = []
     
-    private lazy var teams: [Game] = [Game(name: "Team 1", difficulty: .normal, players: 2, position: 0),
-                                      Game(name: "Team 2", difficulty: .veteran, players: 4, position: 1)]
+    override func viewWillAppear(_ animated: Bool) {
+        self.allGames = Game.findAll()
+        DispatchQueue.main.async {
+            self.reloadGameData()
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,6 +32,10 @@ class HomeScreenViewController: UIViewController {
         self.navigationItem.backButtonTitle = "Back"
         
         self.initializeViews()
+    }
+    
+    private func reloadGameData() {
+        self.configureInitialSnapshot()
     }
 }
 
@@ -51,13 +60,14 @@ extension HomeScreenViewController: DeleteGameProtocol {
 extension HomeScreenViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         self.tableView.deselectRow(at: indexPath, animated: true)
-        guard let section = self.dataSource.sectionIdentifier(for: indexPath.section), let item = self.dataSource.itemIdentifier(for: indexPath) else { return }
+        guard let section = self.dataSource.sectionIdentifier(for: indexPath.section), indexPath.row < self.allGames.count else { return }
         switch section {
-        case .createNewTeam:
+        case .createNewGame:
             let vc = CreateNewGameViewController()
             self.show(vc, sender: nil)
-        case .existingTeams:
-            print(item.teamName)
+        case .existingGame:
+            let game = self.allGames[indexPath.row]
+            print(game.teamName)
         }
     }
 }
@@ -72,18 +82,24 @@ extension HomeScreenViewController {
     }
     
     private func configureInitialSnapshot(_ animated: Bool = true) {
-        var initialSnapshot = NSDiffableDataSourceSnapshot<Section, Game>()
-        initialSnapshot.appendSections([.createNewTeam, .existingTeams])
+        var initialSnapshot = self.dataSource.snapshot()
+        initialSnapshot.deleteAllItems()
+        initialSnapshot = NSDiffableDataSourceSnapshot<Section, RowData>()
+        initialSnapshot.appendSections([.createNewGame, .existingGame])
         
         // Create an empty item to give the create new section a row.
-        initialSnapshot.appendItems([Game()], toSection: .createNewTeam)
+        initialSnapshot.appendItems([RowData(rowType: .createNewGame)], toSection: .createNewGame)
         
-        if !self.teams.isEmpty {
+        if !self.allGames.isEmpty {
             // Assign any existing teams to a cell.
-            initialSnapshot.appendItems(teams, toSection: .existingTeams)
+            var existingGamesRows: [RowData] = []
+            for _ in self.allGames {
+                existingGamesRows.append(RowData(rowType: .existingGame))
+            }
+            initialSnapshot.appendItems(existingGamesRows, toSection: .existingGame)
         }
         
-        self.dataSource.apply(initialSnapshot, animatingDifferences: animated)
+        self.dataSource.apply(initialSnapshot, animatingDifferences: false)
     }
     
     private func configureEditingButton() {
@@ -98,17 +114,19 @@ extension HomeScreenViewController {
     
     private func configureDataSource() {
         self.dataSource = DataSource(tableView: tableView) {
-            (tableView: UITableView, indexPath: IndexPath, team: Game) -> UITableViewCell? in
+            (tableView: UITableView, indexPath: IndexPath, data: RowData) -> UITableViewCell? in
             
             let cell = tableView.dequeueReusableCell(withIdentifier: HomeScreenViewController.reuseIdentifier, for: indexPath)
             var content = cell.defaultContentConfiguration()
             
-            if indexPath.section == 0 {
+            if indexPath.section == Section.createNewGame.rawValue {
                 content.text = "Create A New Game"
                 cell.accessoryType = .disclosureIndicator
-            } else if indexPath.section == 1 {
-                content.text = team.teamName
-                content.secondaryText = "\(team.difficulty) \(team.players)"
+            } else if indexPath.section == Section.existingGame.rawValue {
+                guard indexPath.row < self.allGames.count else { return UITableViewCell() }
+                let gameData: Game = self.allGames[indexPath.row]
+                content.text = gameData.teamName
+                content.secondaryText = "\(gameData.difficulty) \(gameData.numberOfPlayers)"
                 cell.accessoryType = .disclosureIndicator
             } else {
                 fatalError("Unknown section found!")
@@ -136,7 +154,7 @@ extension HomeScreenViewController {
 
 // MARK: Additional UITableViewDiffableDataSourceFunctions
 extension HomeScreenViewController {
-    class DataSource: UITableViewDiffableDataSource<Section, Game> {
+    class DataSource: UITableViewDiffableDataSource<Section, RowData> {
         weak var deleteDelegate: DeleteGameProtocol?
         
         func deleteGameFromSnapshot(atIndexPath indexPath: IndexPath) {
@@ -187,42 +205,20 @@ extension HomeScreenViewController {
 
 // MARK: - Table Modeling Data
 extension HomeScreenViewController {
-    enum Section {
-        case createNewTeam
-        case existingTeams
+    enum Section: Int {
+        case createNewGame
+        case existingGame
     }
     
-    enum Difficulties {
-        case normal
-        case veteran
+    enum Row {
+        case createNewGame
+        case existingGame
     }
     
-    struct Game: Hashable {
-        let teamName: String
-        let difficulty: Difficulties
-        let players: Int
-        let listPosition: Int
+    struct RowData: Hashable {
+        var rowType: Row
         
-        // Init to make an empty object.
-        init() {
-            self.teamName = ""
-            self.difficulty = .normal
-            self.players = 0
-            self.listPosition = 0
-            self.identifier = UUID()
-        }
-        
-        // Init to make an object with some data passed in.
-        init(name: String, difficulty: Difficulties, players: Int, position: Int) {
-            self.teamName = name
-            self.difficulty = difficulty
-            self.players = players
-            self.listPosition = position
-            self.identifier = UUID()
-        }
-        
-        // UUID and hash function
-        private let identifier: UUID
+        private let identifier: UUID = UUID()
         func hash(into hasher: inout Hasher) {
             hasher.combine(self.identifier)
         }

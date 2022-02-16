@@ -8,7 +8,7 @@
 import UIKit
 
 protocol DifficultySelectedDelegate: AnyObject {
-    func updateSelectedDifficulty(withDifficulty difficulty: String, indexPath: IndexPath)
+    func updateSelectedDifficulty(withDifficulty difficulty: Difficulty, indexPath: IndexPath)
 }
 
 class DifficultyPickerViewCollectionViewCell: UICollectionViewListCell {
@@ -17,7 +17,7 @@ class DifficultyPickerViewCollectionViewCell: UICollectionViewListCell {
 
 struct DifficultyPickerViewContentConfiguration: UIContentConfiguration, Equatable {
     var indexPath: IndexPath?
-    var currentSelection: String?
+    var currentSelection: Difficulty?
     var legacyMode: Bool?
     weak var delegate: DifficultySelectedDelegate?
     
@@ -47,7 +47,7 @@ class DifficultyPickerViewContentView: UIView, UIContentView, UIPickerViewDelega
     private var currentConfig: DifficultyPickerViewContentConfiguration!
     
     lazy var pickerView = createPickerView()
-    private var difficulties: [String] = []
+    private var difficulties: [Difficulty] = []
     private var legacyEnabled: Bool?
     
     init(config: DifficultyPickerViewContentConfiguration) {
@@ -105,7 +105,7 @@ class DifficultyPickerViewContentView: UIView, UIContentView, UIPickerViewDelega
     }
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        return difficulties[row]
+        return difficulties[row].rawValue
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
@@ -119,16 +119,16 @@ class DifficultyPickerViewContentView: UIView, UIContentView, UIPickerViewDelega
         pickerView(self.pickerView, didSelectRow: row, inComponent: 0)
     }
     
-    private func setDifficulties() -> [String] {
-        var diffs = ["Normal", "Veteran"]
+    private func setDifficulties() -> [Difficulty] {
+        var diffs = [Difficulty.normal, Difficulty.veteran]
         if self.legacyEnabled ?? false {
-            diffs.append("Hardcore")
-            diffs.append("Insane")
+            diffs.append(Difficulty.hardcore)
+            diffs.append(Difficulty.insane)
         }
         return diffs
     }
     
-    private func getDiffIndex(difficulty: String) -> Int {
+    private func getDiffIndex(difficulty: Difficulty) -> Int {
         for i in 0..<difficulties.count {
             if difficulties[i] == difficulty { return i }
         }
