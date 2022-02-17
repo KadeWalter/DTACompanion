@@ -30,7 +30,8 @@ class HomeScreenViewController: UIViewController {
         super.viewDidLoad()
         self.title = "DTA Companion"
         self.navigationItem.backButtonTitle = "Back"
-        
+        self.tableView.register(GameOverviewTableViewCell.self, forCellReuseIdentifier: GameOverviewTableViewCell.identifier)
+
         self.initializeViews()
     }
     
@@ -45,6 +46,9 @@ extension HomeScreenViewController: DeleteGameProtocol {
         let alert = UIAlertController(title: "Are You Sure?", message: "Are you sure you want to delete this game?", preferredStyle: .alert)
         let yesButton = UIAlertAction(title: "Yes", style: .destructive) { _ in
             alert.dismiss(animated: true)
+            guard indexPath.row < self.allGames.count else { return }
+            let gameToDelete = self.allGames[indexPath.row]
+            gameToDelete.deleteGame()
             self.dataSource.deleteGameFromSnapshot(atIndexPath: indexPath)
         }
         let noButton = UIAlertAction(title: "No", style: .cancel) { _ in
@@ -53,22 +57,6 @@ extension HomeScreenViewController: DeleteGameProtocol {
         alert.addAction(yesButton)
         alert.addAction(noButton)
         self.navigationController?.present(alert, animated: true)
-    }
-}
-
-// MARK: UITableView Delegate Functions
-extension HomeScreenViewController: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        self.tableView.deselectRow(at: indexPath, animated: true)
-        guard let section = self.dataSource.sectionIdentifier(for: indexPath.section), indexPath.row < self.allGames.count else { return }
-        switch section {
-        case .createNewGame:
-            let vc = CreateNewGameViewController()
-            self.show(vc, sender: nil)
-        case .existingGame:
-            let game = self.allGames[indexPath.row]
-            print(game.teamName)
-        }
     }
 }
 
@@ -85,14 +73,18 @@ extension HomeScreenViewController {
         var initialSnapshot = self.dataSource.snapshot()
         initialSnapshot.deleteAllItems()
         initialSnapshot = NSDiffableDataSourceSnapshot<Section, RowData>()
-        initialSnapshot.appendSections([.createNewGame, .existingGame])
+        initialSnapshot.appendSections([.createNewGame])
         
         // Create an empty item to give the create new section a row.
         initialSnapshot.appendItems([RowData(rowType: .createNewGame)], toSection: .createNewGame)
         
         if !self.allGames.isEmpty {
+            // Add the existing games section to the snapshot.
+            initialSnapshot.appendSections([.existingGame])
+            
             // Assign any existing teams to a cell.
             var existingGamesRows: [RowData] = []
+            
             for _ in self.allGames {
                 existingGamesRows.append(RowData(rowType: .existingGame))
             }
@@ -116,23 +108,25 @@ extension HomeScreenViewController {
         self.dataSource = DataSource(tableView: tableView) {
             (tableView: UITableView, indexPath: IndexPath, data: RowData) -> UITableViewCell? in
             
-            let cell = tableView.dequeueReusableCell(withIdentifier: HomeScreenViewController.reuseIdentifier, for: indexPath)
-            var content = cell.defaultContentConfiguration()
-            
             if indexPath.section == Section.createNewGame.rawValue {
+                let cell = tableView.dequeueReusableCell(withIdentifier: HomeScreenViewController.reuseIdentifier, for: indexPath)
+                var content = cell.defaultContentConfiguration()
                 content.text = "Create A New Game"
                 cell.accessoryType = .disclosureIndicator
+                cell.contentConfiguration = content
+                return cell
             } else if indexPath.section == Section.existingGame.rawValue {
                 guard indexPath.row < self.allGames.count else { return UITableViewCell() }
                 let gameData: Game = self.allGames[indexPath.row]
-                content.text = gameData.teamName
-                content.secondaryText = "\(gameData.difficulty) \(gameData.numberOfPlayers)"
+                guard let cell = tableView.dequeueReusableCell(withIdentifier: GameOverviewTableViewCell.identifier) as? GameOverviewTableViewCell else {
+                    return UITableViewCell()
+                }
+                cell.setupCell(forGame: gameData)
                 cell.accessoryType = .disclosureIndicator
+                return cell
             } else {
                 fatalError("Unknown section found!")
             }
-            cell.contentConfiguration = content
-            return cell
         }
         self.dataSource.deleteDelegate = self
     }
@@ -158,10 +152,12 @@ extension HomeScreenViewController {
         weak var deleteDelegate: DeleteGameProtocol?
         
         func deleteGameFromSnapshot(atIndexPath indexPath: IndexPath) {
-            if let idToDelete = self.itemIdentifier(for: indexPath) {
-                var snapshot = self.snapshot()
-                snapshot.deleteItems([idToDelete])
-                self.apply(snapshot)
+            DispatchQueue.main.async {
+                if let idToDelete = self.itemIdentifier(for: indexPath) {
+                    var snapshot = self.snapshot()
+                    snapshot.deleteItems([idToDelete])
+                    self.apply(snapshot)
+                }
             }
         }
         
@@ -184,21 +180,40 @@ extension HomeScreenViewController {
             return indexPath.section != 0
         }
         override func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
-            guard sourceIndexPath != destinationIndexPath else { return }
-            guard let sourceID = itemIdentifier(for: sourceIndexPath), let destID = itemIdentifier(for: destinationIndexPath) else { return }
-            
-            var snapshot = self.snapshot()
-            
-            if let sourceIndex = snapshot.indexOfItem(sourceID), let destIndex = snapshot.indexOfItem(destID) {
-                let isAfter = destIndex > sourceIndex
-                snapshot.deleteItems([sourceID])
-                if isAfter {
-                    snapshot.insertItems([sourceID], afterItem: destID)
-                } else {
-                    snapshot.insertItems([sourceID], beforeItem: destID)
+            DispatchQueue.main.async {
+                guard sourceIndexPath != destinationIndexPath else { return }
+                guard let sourceID = self.itemIdentifier(for: sourceIndexPath), let destID = self.itemIdentifier(for: destinationIndexPath) else { return }
+                
+                var snapshot = self.snapshot()
+                
+                if let sourceIndex = snapshot.indexOfItem(sourceID), let destIndex = snapshot.indexOfItem(destID) {
+                    let isAfter = destIndex > sourceIndex
+                    snapshot.deleteItems([sourceID])
+                    if isAfter {
+                        snapshot.insertItems([sourceID], afterItem: destID)
+                    } else {
+                        snapshot.insertItems([sourceID], beforeItem: destID)
+                    }
                 }
+                self.apply(snapshot, animatingDifferences: false)
             }
-            apply(snapshot, animatingDifferences: false)
+        }
+    }
+}
+
+// MARK: UITableView Delegate Functions
+extension HomeScreenViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        self.tableView.deselectRow(at: indexPath, animated: true)
+        guard let section = self.dataSource.sectionIdentifier(for: indexPath.section) else { return }
+        switch section {
+        case .createNewGame:
+            let vc = CreateNewGameViewController()
+            self.show(vc, sender: nil)
+        case .existingGame:
+            guard indexPath.row < self.allGames.count else { return }
+            let game = self.allGames[indexPath.row]
+            print(game.teamName)
         }
     }
 }
@@ -213,6 +228,7 @@ extension HomeScreenViewController {
     enum Row {
         case createNewGame
         case existingGame
+        case noExistingGames
     }
     
     struct RowData: Hashable {

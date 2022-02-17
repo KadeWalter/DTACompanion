@@ -69,7 +69,8 @@ class TextEntryContentView: UIView, UIContentView, UITextFieldDelegate {
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
-        guard let text = textField.text else { return }
+        guard var text = textField.text else { return }
+        text = text.replacingOccurrences(of: "\u{00a0}", with: " ")
         currentConfig.textChangedDelegate?.textUpdated(withText: text, cellTag: currentConfig.tag ?? 0, parentId: currentConfig.parentId)
     }
     
@@ -117,7 +118,7 @@ class TextEntryContentView: UIView, UIContentView, UITextFieldDelegate {
         tf.returnKeyType = .done
         tf.borderStyle = .none
         tf.placeholder = "required"
-        tf.textAlignment = .right
+        tf.textAlignment = .left
         tf.delegate = self
         return tf
     }

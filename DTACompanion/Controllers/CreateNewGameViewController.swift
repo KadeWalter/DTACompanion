@@ -16,6 +16,7 @@ class CreateNewGameViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "Create A New Game"
+        self.registerKeyboardNotifications()
         
         self.initializeViews()
     }
@@ -35,9 +36,8 @@ class CreateNewGameViewController: UIViewController {
     }
     
     private func updateGameInfoPlayers() {
-        let sectionSnap = self.dataSource.snapshot(for: .playerInfo)
-        let visiblePlayers = sectionSnap.rootItems
-        for i in 0..<visiblePlayers.count {
+        let newPlayerCount = self.gameInfo.numberOfPlayers
+        for i in 0..<newPlayerCount {
             // Check if the gameInfo contains this characters information.
             // If it doesn't, then add blank data.
             if gameInfo.playerData[i] == nil {
@@ -46,53 +46,56 @@ class CreateNewGameViewController: UIViewController {
         }
         
         // Next remove any characters from gameInfo that are no longer shown.
-        for i in visiblePlayers.count..<4 {
+        for i in newPlayerCount..<4 {
             gameInfo.playerData[i] = nil
         }
     }
     
     private func saveGameData() {
-        self.collectionView.resignFirstResponder()
-        
-        // Verify the team name is populated.
-        var teamName: String
-        if self.gameInfo.teamName == nil || (self.gameInfo.teamName ?? "").isEmpty {
-            // Prompt alert for team name missing
-            self.navigationController?.showAlert(withTitle: "Error", message: "Team name is required.")
-            return
-        } else {
-            teamName = self.gameInfo.teamName!
+        DispatchQueue.main.async {
+            // Verify the team name is populated.
+            var teamName: String
+            if self.gameInfo.teamName == nil || (self.gameInfo.teamName ?? "").isEmpty {
+                // Prompt alert for team name missing
+                self.navigationController?.showAlert(withTitle: "Error", message: "Team name is required.")
+                return
+            } else {
+                teamName = self.gameInfo.teamName!
+            }
+            
+            // Verify the difficulty is populated.
+            var diff: Difficulty
+            if self.gameInfo.difficulty == nil {
+                // Prompt alert for team name missing
+                self.navigationController?.showAlert(withTitle: "Error", message: "Difficulty is required.")
+                return
+            } else {
+                diff = self.gameInfo.difficulty!
+            }
+            
+            let numberOfPlayers: Int = self.gameInfo.numberOfPlayers
+            let legacyMode = self.gameInfo.legacyMode
+            
+            // Create player data
+            let players: Set<Player> = self.savePlayers()
+            if players.isEmpty {
+                self.navigationController?.showAlert(withTitle: "Error", message: "Missing player information.")
+            }
+            
+            // Save the game to core data.
+            Game.saveNewGame(teamName: teamName, numberOfPlayers: numberOfPlayers, legacyMode: legacyMode, difficulty: diff, players: players, dateCreated: Date())
+            self.navigationController?.popViewController(animated: true)
         }
-        
-        // Verify the difficulty is populated.
-        var diff: Difficulty
-        if self.gameInfo.difficulty == nil {
-            // Prompt alert for team name missing
-            self.navigationController?.showAlert(withTitle: "Error", message: "Difficulty is required.")
-            return
-        } else {
-            diff = self.gameInfo.difficulty!
-        }
-        
-        let numberOfPlayers: Int = self.gameInfo.numberOfPlayers
-        let legacyMode = self.gameInfo.legacyMode
-        
-        // Create player data
-        let players: Set<Player> = savePlayers()
-        if players.isEmpty {
-            self.navigationController?.showAlert(withTitle: "Error", message: "Player data is required.")
-        }
-        
-        // Save the game to core data.
-        Game.saveNewGame(teamName: teamName, numberOfPlayers: numberOfPlayers, legacyMode: legacyMode, difficulty: diff, players: players, dateCreated: Date())
-        self.navigationController?.popViewController(animated: true)
     }
     
     private func savePlayers() -> Set<Player> {
         var playerData: Set<Player> = []
         for i in 0..<self.gameInfo.numberOfPlayers {
             guard let playerInfo = self.gameInfo.playerData[i] else { return [] }
-            playerData.insert(Player.savePlayer(withName: playerInfo.name, character: playerInfo.character))
+            if playerInfo.name == "" || playerInfo.character == "" {
+                return []
+            }
+            playerData.insert(Player.savePlayer(withName: playerInfo.name, character: playerInfo.character, index: i))
         }
         return playerData
     }
@@ -101,7 +104,7 @@ class CreateNewGameViewController: UIViewController {
 // MARK: - UICollectionView Delegate Functions
 extension CreateNewGameViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        self.collectionView.resignFirstResponder()
+        self.collectionView.endEditing(true)
         guard let item = self.dataSource.itemIdentifier(for: indexPath) else { return }
         collectionView.deselectItem(at: indexPath, animated: true)
         
@@ -111,6 +114,11 @@ extension CreateNewGameViewController: UICollectionViewDelegate {
                 contentView.textField.becomeFirstResponder()
             }
         case .character:
+            // Resign responder from name if it is up.
+            if let cell = self.collectionView.cellForItem(at: IndexPath(row: indexPath.row - 1, section: indexPath.section)) as? TextEntryCollectionViewCell, let contentView = cell.contentView as? TextEntryContentView {
+                contentView.textField.resignFirstResponder()
+            }
+            // Check if we should show or hide the character picker cell.
             if let item = self.dataSource.itemIdentifier(for: IndexPath(row: indexPath.row + 1, section: indexPath.section)),
                item.rowType == .characterPicker {
                 self.dataSource.removeCharacterSelectionPicker(withIndexPath: IndexPath(row: indexPath.row + 1, section: indexPath.section))
@@ -163,9 +171,9 @@ extension CreateNewGameViewController: SegmentedControlCellUpdatedDelegate {
         switch Row(rawValue: cellTag) {
         case .numberOfPlayers:
             guard let playerCount: Int = Int(item) else { return }
+            self.gameInfo.numberOfPlayers = playerCount
             self.dataSource.updatePlayerRows(playerCount: playerCount)
             self.updateGameInfoPlayers()
-            self.gameInfo.numberOfPlayers = playerCount
         default:
             fatalError("Unknown segmented control cell updated.")
         }
@@ -398,7 +406,7 @@ extension CreateNewGameViewController {
                     var info = DataSourceItemInformation(row: .characterPicker)
                     info.parentId = idOfSelection.parentId
                     snapshot.insertItems([info], afterItem: idOfSelection)
-                    self.apply(snapshot, animatingDifferences: true)
+                    self.apply(snapshot, animatingDifferences: false)
                 }
             }
         }
@@ -409,7 +417,7 @@ extension CreateNewGameViewController {
                 if let idToDelete = self.itemIdentifier(for: indexPath) {
                     var snapshot = self.snapshot()
                     snapshot.deleteItems([idToDelete])
-                    self.apply(snapshot, animatingDifferences: true)
+                    self.apply(snapshot, animatingDifferences: false)
                 }
             }
         }
@@ -421,7 +429,7 @@ extension CreateNewGameViewController {
                     var snapshot = self.snapshot()
                     let pickerView = DataSourceItemInformation(row: .difficultyPicker)
                     snapshot.insertItems([pickerView], afterItem: idOfSelection)
-                    self.apply(snapshot, animatingDifferences: true)
+                    self.apply(snapshot, animatingDifferences: false)
                 }
             }
         }
@@ -432,7 +440,7 @@ extension CreateNewGameViewController {
                 if let idToDelete = self.itemIdentifier(for: indexPath) {
                     var snapshot = self.snapshot()
                     snapshot.deleteItems([idToDelete])
-                    self.apply(snapshot, animatingDifferences: true)
+                    self.apply(snapshot, animatingDifferences: false)
                 }
             }
         }
@@ -669,5 +677,24 @@ extension CreateNewGameViewController {
             content.textProperties.alignment = .center
             cell.contentConfiguration = content
         }
+    }
+}
+
+//MARK: - Keyboard Show/Hide Functions
+extension CreateNewGameViewController {
+    private func registerKeyboardNotifications() {
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
+    @objc private func keyboardWillShow(sender: NSNotification) {
+        let info = sender.userInfo!
+        let keyboardSize = (info[UIResponder.keyboardFrameEndUserInfoKey] as! NSValue).cgRectValue.height
+
+        self.collectionView.contentInset.bottom = keyboardSize
+    }
+
+    @objc private func keyboardWillHide(sender: NSNotification) {
+        self.collectionView.contentInset.bottom = 0
     }
 }
