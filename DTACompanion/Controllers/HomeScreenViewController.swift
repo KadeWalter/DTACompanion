@@ -47,11 +47,21 @@ extension HomeScreenViewController: DeleteGameProtocol {
         let yesButton = UIAlertAction(title: "Yes", style: .destructive) { _ in
             alert.dismiss(animated: true)
             guard indexPath.row < self.allGames.count else { return }
+            
+            // Get the Game object to delete.
             let gameToDelete = self.allGames[indexPath.row]
-            gameToDelete.deleteGame()
-            self.dataSource.deleteGameFromSnapshot(atIndexPath: indexPath)
+            
+            // Delete the game from Core Data.
+            if gameToDelete.deleteGame() {
+                // If the game was deleted from Core Data, remove it from the allGames array.
+                self.allGames.remove(at: indexPath.row)
+                
+                // Update the snapshot to remove the cell for the game that was deleted.
+                self.dataSource.deleteGameFromSnapshot(atIndexPath: indexPath)
+            }
         }
         let noButton = UIAlertAction(title: "No", style: .cancel) { _ in
+            // User reconsidered their choices, so lets not do anything :)
             alert.dismiss(animated: true)
         }
         alert.addAction(yesButton)
@@ -156,7 +166,10 @@ extension HomeScreenViewController {
                 if let idToDelete = self.itemIdentifier(for: indexPath) {
                     var snapshot = self.snapshot()
                     snapshot.deleteItems([idToDelete])
-                    self.apply(snapshot)
+                    if snapshot.numberOfItems(inSection: .existingGame) == 0, let sectionToRemove = snapshot.sectionIdentifiers.filter({ $0 == .existingGame }).first {
+                        snapshot.deleteSections([sectionToRemove])
+                    }
+                    self.apply(snapshot, animatingDifferences: false)
                 }
             }
         }
@@ -172,30 +185,6 @@ extension HomeScreenViewController {
         override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
             if editingStyle == .delete {
                 deleteDelegate?.deleteGame(forIndexPath: indexPath)
-            }
-        }
-        
-        // Moving functionality:
-        override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-            return indexPath.section != 0
-        }
-        override func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
-            DispatchQueue.main.async {
-                guard sourceIndexPath != destinationIndexPath else { return }
-                guard let sourceID = self.itemIdentifier(for: sourceIndexPath), let destID = self.itemIdentifier(for: destinationIndexPath) else { return }
-                
-                var snapshot = self.snapshot()
-                
-                if let sourceIndex = snapshot.indexOfItem(sourceID), let destIndex = snapshot.indexOfItem(destID) {
-                    let isAfter = destIndex > sourceIndex
-                    snapshot.deleteItems([sourceID])
-                    if isAfter {
-                        snapshot.insertItems([sourceID], afterItem: destID)
-                    } else {
-                        snapshot.insertItems([sourceID], beforeItem: destID)
-                    }
-                }
-                self.apply(snapshot, animatingDifferences: false)
             }
         }
     }

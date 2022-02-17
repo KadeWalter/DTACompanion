@@ -67,17 +67,20 @@ extension Game {
 
 // MARK: - Delete A Game
 extension Game {
-    func deleteGame() {
+    func deleteGame() -> Bool {
         return deleteGame(context: Game.GenericManagedObjectContext())
     }
     
-    func deleteGame(context: NSManagedObjectContext) {
+    func deleteGame(context: NSManagedObjectContext) -> Bool {
+        var gameDeleted: Bool = false
         Player.deleteMultiplePlayers(players: self.players)
         context.delete(self)
         do {
             try context.save()
+            gameDeleted = true
         } catch {
             fatalError("Unable to delete game.")
         }
+        return gameDeleted
     }
 }
