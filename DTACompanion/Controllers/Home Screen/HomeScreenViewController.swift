@@ -202,7 +202,8 @@ extension HomeScreenViewController: UITableViewDelegate {
         case .existingGame:
             guard indexPath.row < self.allGames.count else { return }
             let game = self.allGames[indexPath.row]
-            print(game.teamName)
+            let vc = ViewExistingGameViewController(withGame: game)
+            self.navigationController?.pushViewController(vc, animated: true)
         }
     }
 }

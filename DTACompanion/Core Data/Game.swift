@@ -25,6 +25,10 @@ class Game: GenericNSManagedObject {
     func playersAsArray() -> [Player] {
         return Array(self.players).sorted(by: { $0.index < $1.index })
     }
+    
+    func player(forIndex index: Int) -> Player? {
+        return self.players.filter({ $0.index == index}).first
+    }
 }
 
 // MARK: - Save Games

@@ -115,4 +115,40 @@ class GameTests: XCTestCase {
         XCTAssertEqual(playersInOrderedArray[2], player3)
         XCTAssertEqual(playersInOrderedArray[3], player4)
     }
+    
+    func testPlayersForIndex() {
+        let context = CoreDataTestStack().persistentContainer.viewContext
+        
+        // Create players to be used.
+        // Player 1 is actually index 2
+        let player1 = Player.savePlayer(withName: "A", character: "AC", index: 2, context: context)
+        // Player 1 is actually index 3
+        let player2 = Player.savePlayer(withName: "B", character: "BC", index: 3, context: context)
+        // Player 1 is actually index 0
+        let player3 = Player.savePlayer(withName: "C", character: "CC", index: 0, context: context)
+        // Player 1 is actually index 1
+        let player4 = Player.savePlayer(withName: "D", character: "DC", index: 1, context: context)
+        
+        // Insert the characters randomly.
+        var setOfPlayers = Set<Player>()
+        setOfPlayers.insert(player2)
+        setOfPlayers.insert(player4)
+        setOfPlayers.insert(player1)
+        setOfPlayers.insert(player3)
+        
+        // Create the game with the characters
+        Game.saveNewGame(teamName: "test team", numberOfPlayers: 4, legacyMode: false, difficulty: Difficulty.normal, players: setOfPlayers, dateCreated: Date(), context: context)
+        
+        let game = Game.findAll(withContext: context).first!
+        // Get the players that were saved to the game.
+        let playerAtIndex0 = game.player(forIndex: 0)
+        let playerAtIndex1 = game.player(forIndex: 1)
+        let playerAtIndex2 = game.player(forIndex: 2)
+        let playerAtIndex3 = game.player(forIndex: 3)
+        // Verify they were in order.
+        XCTAssertEqual(playerAtIndex0, player3)
+        XCTAssertEqual(playerAtIndex1, player4)
+        XCTAssertEqual(playerAtIndex2, player1)
+        XCTAssertEqual(playerAtIndex3, player2)
+    }
 }

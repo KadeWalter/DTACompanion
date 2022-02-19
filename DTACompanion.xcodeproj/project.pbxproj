@@ -15,7 +15,7 @@
 		1950685827BFDD8900E0274D /* CreateNewGameViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1950685727BFDD8900E0274D /* CreateNewGameViewControllerTests.swift */; };
 		1950685A27BFDDF700E0274D /* CreateNewGameDelegateFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1950685927BFDDF700E0274D /* CreateNewGameDelegateFunctions.swift */; };
 		1950685D27BFDECF00E0274D /* CreateNewGameCellRegistrations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1950685C27BFDECF00E0274D /* CreateNewGameCellRegistrations.swift */; };
-		1950686127BFE3F300E0274D /* ViewGameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1950686027BFE3F300E0274D /* ViewGameViewController.swift */; };
+		1950686127BFE3F300E0274D /* ViewExistingGameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1950686027BFE3F300E0274D /* ViewExistingGameViewController.swift */; };
 		1953F31D27BF27A000F84D8E /* GameTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1953F31C27BF27A000F84D8E /* GameTests.swift */; };
 		1953F31F27BF28D600F84D8E /* CoreDataTestStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1953F31E27BF28D600F84D8E /* CoreDataTestStack.swift */; };
 		195B6A8827BDD46E007A2790 /* GameOverviewTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 195B6A8727BDD46E007A2790 /* GameOverviewTableViewCell.swift */; };
@@ -36,6 +36,7 @@
 		19ED30AD27B0AF850013766B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 19ED30AC27B0AF850013766B /* Assets.xcassets */; };
 		19ED30B027B0AF850013766B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 19ED30AE27B0AF850013766B /* LaunchScreen.storyboard */; };
 		19ED30D727B0B1140013766B /* HomeScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19ED30D627B0B1140013766B /* HomeScreenViewController.swift */; };
+		19F5A44227C17FF5007AC856 /* DataDisplayCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19F5A44127C17FF5007AC856 /* DataDisplayCollectionViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,7 +58,7 @@
 		1950685727BFDD8900E0274D /* CreateNewGameViewControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateNewGameViewControllerTests.swift; sourceTree = "<group>"; };
 		1950685927BFDDF700E0274D /* CreateNewGameDelegateFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateNewGameDelegateFunctions.swift; sourceTree = "<group>"; };
 		1950685C27BFDECF00E0274D /* CreateNewGameCellRegistrations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateNewGameCellRegistrations.swift; sourceTree = "<group>"; };
-		1950686027BFE3F300E0274D /* ViewGameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewGameViewController.swift; sourceTree = "<group>"; };
+		1950686027BFE3F300E0274D /* ViewExistingGameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewExistingGameViewController.swift; sourceTree = "<group>"; };
 		1953F31C27BF27A000F84D8E /* GameTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameTests.swift; sourceTree = "<group>"; };
 		1953F31E27BF28D600F84D8E /* CoreDataTestStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataTestStack.swift; sourceTree = "<group>"; };
 		195B6A8727BDD46E007A2790 /* GameOverviewTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOverviewTableViewCell.swift; sourceTree = "<group>"; };
@@ -81,6 +82,7 @@
 		19ED30B127B0AF850013766B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		19ED30B627B0AF850013766B /* DTACompanionTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DTACompanionTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		19ED30D627B0B1140013766B /* HomeScreenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeScreenViewController.swift; sourceTree = "<group>"; };
+		19F5A44127C17FF5007AC856 /* DataDisplayCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataDisplayCollectionViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,7 +107,7 @@
 			isa = PBXGroup;
 			children = (
 				195B6A8627BDD432007A2790 /* Home Screen */,
-				195B6A8527BDD424007A2790 /* Create New Game */,
+				195B6A8527BDD424007A2790 /* Game Data Cells */,
 			);
 			path = "Custom Cells";
 			sourceTree = "<group>";
@@ -128,15 +130,15 @@
 			path = "Home Screen";
 			sourceTree = "<group>";
 		};
-		1950685F27BFE3B100E0274D /*  View Games */ = {
+		1950685F27BFE3B100E0274D /*  View Existing Games */ = {
 			isa = PBXGroup;
 			children = (
-				1950686027BFE3F300E0274D /* ViewGameViewController.swift */,
+				1950686027BFE3F300E0274D /* ViewExistingGameViewController.swift */,
 			);
-			path = " View Games";
+			path = " View Existing Games";
 			sourceTree = "<group>";
 		};
-		195B6A8527BDD424007A2790 /* Create New Game */ = {
+		195B6A8527BDD424007A2790 /* Game Data Cells */ = {
 			isa = PBXGroup;
 			children = (
 				1940FDCA27B57DB000C69111 /* TextEntryCollectionViewCell.swift */,
@@ -144,8 +146,9 @@
 				19B2F3DC27B6DB0500EEE513 /* CharacterPickerViewCollectionViewCell.swift */,
 				1931422C27BA0C4300752221 /* DifficultyPickerViewCollectionViewCell.swift */,
 				1931423127BAEDB400752221 /* SwitchListCollectionViewCell.swift */,
+				19F5A44127C17FF5007AC856 /* DataDisplayCollectionViewCell.swift */,
 			);
-			path = "Create New Game";
+			path = "Game Data Cells";
 			sourceTree = "<group>";
 		};
 		195B6A8627BDD432007A2790 /* Home Screen */ = {
@@ -254,7 +257,7 @@
 				19CAB10B27BC816C001D21F6 /* Extensions */,
 				1950685E27BFE3A100E0274D /* Home Screen */,
 				1950685B27BFDE0500E0274D /* Create New Game */,
-				1950685F27BFE3B100E0274D /*  View Games */,
+				1950685F27BFE3B100E0274D /*  View Existing Games */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -378,8 +381,9 @@
 				19E0789F27BDBA1200187FCE /* LootCard.swift in Sources */,
 				1940FDCB27B57DB000C69111 /* TextEntryCollectionViewCell.swift in Sources */,
 				19E0789D27BDBA0800187FCE /* Scenario.swift in Sources */,
-				1950686127BFE3F300E0274D /* ViewGameViewController.swift in Sources */,
+				1950686127BFE3F300E0274D /* ViewExistingGameViewController.swift in Sources */,
 				1931422D27BA0C4300752221 /* DifficultyPickerViewCollectionViewCell.swift in Sources */,
+				19F5A44227C17FF5007AC856 /* DataDisplayCollectionViewCell.swift in Sources */,
 				19CAB10727BC43A6001D21F6 /* Player.swift in Sources */,
 				19ED30AB27B0AF840013766B /* DTACompanion.xcdatamodeld in Sources */,
 			);

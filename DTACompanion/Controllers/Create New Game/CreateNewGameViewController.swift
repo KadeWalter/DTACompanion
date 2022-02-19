@@ -101,55 +101,6 @@ class CreateNewGameViewController: UIViewController {
     }
 }
 
-// MARK: - UICollectionView Delegate Functions
-extension CreateNewGameViewController: UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        self.collectionView.endEditing(true)
-        guard let item = self.dataSource.itemIdentifier(for: indexPath) else { return }
-        collectionView.deselectItem(at: indexPath, animated: true)
-        
-        switch item.rowType {
-        case .name, .teamName:
-            if let cell = collectionView.cellForItem(at: indexPath) as? TextEntryCollectionViewCell, let contentView = cell.contentView as? TextEntryContentView, item.rowType != .character {
-                contentView.textField.becomeFirstResponder()
-            }
-        case .character:
-            // Resign responder from name if it is up.
-            if let cell = self.collectionView.cellForItem(at: IndexPath(row: indexPath.row - 1, section: indexPath.section)) as? TextEntryCollectionViewCell, let contentView = cell.contentView as? TextEntryContentView {
-                contentView.textField.resignFirstResponder()
-            }
-            // Check if we should show or hide the character picker cell.
-            if let item = self.dataSource.itemIdentifier(for: IndexPath(row: indexPath.row + 1, section: indexPath.section)),
-               item.rowType == .characterPicker {
-                self.dataSource.removeCharacterSelectionPicker(withIndexPath: IndexPath(row: indexPath.row + 1, section: indexPath.section))
-            } else {
-                self.dataSource.showCharacterSelectionPicker(withIndexPath: indexPath)
-            }
-        case .difficulty:
-            if let item = self.dataSource.itemIdentifier(for: IndexPath(row: indexPath.row + 1, section: indexPath.section)),
-               item.rowType == .difficultyPicker {
-                self.dataSource.removeDifficultySelectionPicker(withIndexPath: IndexPath(row: indexPath.row + 1, section: indexPath.section))
-            } else {
-                self.dataSource.showDifficultySelectionPicker(withIndexPath: indexPath)
-            }
-        case .save:
-            self.saveGameData()
-        default:
-            return
-        }
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, shouldHighlightItemAt indexPath: IndexPath) -> Bool {
-        guard let item = self.dataSource.itemIdentifier(for: indexPath) else { return false }
-        switch item.rowType {
-        case .characterPicker, .difficultyPicker, .numberOfPlayers, .legacyMode:
-            return false
-        default:
-            return true
-        }
-    }
-}
-
 // MARK: - View Initialization and Configuration Functions
 extension CreateNewGameViewController {
     private func initializeViews() {
@@ -188,12 +139,16 @@ extension CreateNewGameViewController {
         basicInfoSnapshot.append(basicInfoRows)
         
         // Apply the section for number of players.
-        // Because the min is 1, in the initial setup, just show 1 section.
+        // Because the min is 1, in the initial setup just show 1 section.
         var playerSnapshot = NSDiffableDataSourceSectionSnapshot<DataSourceItemInformation>()
+        // Create the player header cell:
         var playerRoot = DataSourceItemInformation(row: .player, hasChildren: true)
         let playerId = 0
         playerRoot.parentId = playerId
+        // Append the player header cell to the player section snapshot:
         playerSnapshot.append([playerRoot])
+        
+        // Create the player data cells:
         var name = DataSourceItemInformation(row: .name)
         var character = DataSourceItemInformation(row: .character)
         var lootCards = DataSourceItemInformation(row: .lootCards)
@@ -202,7 +157,10 @@ extension CreateNewGameViewController {
         character.parentId = playerId
         lootCards.parentId = playerId
         let playerInformationRows = [name, character, lootCards]
+        // Append the player data cells to the player header row in the snapshot:
         playerSnapshot.append(playerInformationRows, to: playerRoot)
+        
+        // Make sure we create this default player in the self.gameInfo object:
         self.gameInfo.playerData[playerId] = PlayerInformation(playerId: playerId, name: "", character: "", lootCards: "")
         
         // Apply the scorecard section
@@ -219,6 +177,56 @@ extension CreateNewGameViewController {
         self.dataSource.apply(playerSnapshot, to: .playerInfo, animatingDifferences: false)
         self.dataSource.apply(scorecardSnapshot, to: .scorecard, animatingDifferences: false)
         self.dataSource.apply(saveSnapshot, to: .save, animatingDifferences: false)
+    }
+}
+
+// MARK: - UICollectionView Delegate Functions
+extension CreateNewGameViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        self.collectionView.endEditing(true)
+        guard let item = self.dataSource.itemIdentifier(for: indexPath) else { return }
+        collectionView.deselectItem(at: indexPath, animated: true)
+        
+        switch item.rowType {
+        case .name, .teamName:
+            if let cell = collectionView.cellForItem(at: indexPath) as? TextEntryCollectionViewCell, let contentView = cell.contentView as? TextEntryContentView, item.rowType != .character {
+                contentView.textField.becomeFirstResponder()
+            }
+        case .character:
+            // Resign responder from name if it is up.
+            if let cell = self.collectionView.cellForItem(at: IndexPath(row: indexPath.row - 1, section: indexPath.section)) as? TextEntryCollectionViewCell, let contentView = cell.contentView as? TextEntryContentView {
+                contentView.textField.resignFirstResponder()
+            }
+            // Check if we should show or hide the character picker cell.
+            if let item = self.dataSource.itemIdentifier(for: IndexPath(row: indexPath.row + 1, section: indexPath.section)),
+               item.rowType == .characterPicker {
+                self.dataSource.removeCharacterSelectionPicker(withIndexPath: IndexPath(row: indexPath.row + 1, section: indexPath.section))
+            } else {
+                self.dataSource.showCharacterSelectionPicker(withIndexPath: indexPath)
+            }
+        case .difficulty:
+            if let item = self.dataSource.itemIdentifier(for: IndexPath(row: indexPath.row + 1, section: indexPath.section)),
+               item.rowType == .difficultyPicker {
+                self.dataSource.removeDifficultySelectionPicker(withIndexPath: IndexPath(row: indexPath.row + 1, section: indexPath.section))
+            } else {
+                self.dataSource.showDifficultySelectionPicker(withIndexPath: indexPath)
+            }
+        case .save:
+            self.saveGameData()
+        default:
+            // TODO: - Navigate to correct screens for player loot cards and sessions.
+            return
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, shouldHighlightItemAt indexPath: IndexPath) -> Bool {
+        guard let item = self.dataSource.itemIdentifier(for: indexPath) else { return false }
+        switch item.rowType {
+        case .characterPicker, .difficultyPicker, .numberOfPlayers, .legacyMode:
+            return false
+        default:
+            return true
+        }
     }
 }
 

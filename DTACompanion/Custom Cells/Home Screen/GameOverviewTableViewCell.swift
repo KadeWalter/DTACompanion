@@ -49,13 +49,24 @@ class GameOverviewTableViewCell: UITableViewCell {
     override func prepareForReuse() {
         self.teamLabel.text = ""
         self.diffLabel.text = ""
-        self.playerChars = []
-        self.playerNames = []
+        self.playerChars.removeAll()
+        self.playerNames.removeAll()
+        
+        // Empty the subviews in the stackviews.
+        self.playerNamesStackView.subviews.forEach({ $0.removeFromSuperview() })
+        self.playerCharactersStackView.subviews.forEach({ $0.removeFromSuperview() })
+        self.leftStackView.subviews.forEach({ $0.removeFromSuperview() })
+        self.rightStackView.subviews.forEach({ $0.removeFromSuperview() })
+        self.overallStackView.subviews.forEach({ $0.removeFromSuperview() })
     }
     
     private func reloadPlayerLabels() {
+        self.playerNames.removeAll()
+        self.playerChars.removeAll()
+        
         self.playerNames = createPlayerLabels()
         self.playerChars = createPlayerLabels()
+        
         self.initializeViews()
     }
 }
@@ -84,7 +95,9 @@ extension GameOverviewTableViewCell {
             overallStackView.topAnchor.constraint(equalTo: guide.topAnchor),
             overallStackView.bottomAnchor.constraint(equalTo: guide.bottomAnchor),
             overallStackView.leadingAnchor.constraint(equalTo: guide.leadingAnchor),
-            overallStackView.trailingAnchor.constraint(equalTo: guide.trailingAnchor)
+            overallStackView.trailingAnchor.constraint(equalTo: guide.trailingAnchor),
+            // Make the right stack view 40% of the cell for truncating long game team names.
+            rightStackView.widthAnchor.constraint(equalTo: guide.widthAnchor, multiplier: 0.40)
         ])
     }
     
@@ -153,7 +166,7 @@ extension GameOverviewTableViewCell {
         stackView.alignment = .center
         stackView.spacing = 1
         stackView.axis = .horizontal
-        stackView.distribution = .fillEqually
+        stackView.distribution = .fillProportionally
         return stackView
     }
 }
