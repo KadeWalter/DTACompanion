@@ -30,7 +30,11 @@ class Game: GenericNSManagedObject {
 // MARK: - Save Games
 extension Game {
     class func saveNewGame(teamName: String, numberOfPlayers: Int, legacyMode: Bool, difficulty: Difficulty, players: Set<Player>, dateCreated: Date) {
-        let game = Game(context: self.GenericManagedObjectContext())
+        saveNewGame(teamName: teamName, numberOfPlayers: numberOfPlayers, legacyMode: legacyMode, difficulty: difficulty, players: players, dateCreated: dateCreated, context: self.GenericManagedObjectContext())
+    }
+    
+    class func saveNewGame(teamName: String, numberOfPlayers: Int, legacyMode: Bool, difficulty: Difficulty, players: Set<Player>, dateCreated: Date, context: NSManagedObjectContext) {
+        let game = Game(context: context)
         game.teamName = teamName
         game.numberOfPlayers = Int64(numberOfPlayers)
         game.legacyMode = legacyMode
@@ -39,9 +43,9 @@ extension Game {
         game.players = players
         
         do {
-            try self.GenericManagedObjectContext().save()
+            try context.save()
         } catch {
-            fatalError("Error saving game.")
+            fatalError("Error saving game: \(error)")
         }
     }
 }
@@ -67,11 +71,11 @@ extension Game {
 
 // MARK: - Delete A Game
 extension Game {
-    func deleteGame() -> Bool {
+    @discardableResult func deleteGame() -> Bool {
         return deleteGame(context: Game.GenericManagedObjectContext())
     }
     
-    func deleteGame(context: NSManagedObjectContext) -> Bool {
+    @discardableResult func deleteGame(context: NSManagedObjectContext) -> Bool {
         var gameDeleted: Bool = false
         Player.deleteMultiplePlayers(players: self.players)
         context.delete(self)

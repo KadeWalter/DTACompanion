@@ -9,9 +9,9 @@ import UIKit
 
 class CreateNewGameViewController: UIViewController {
     
-    private var collectionView: UICollectionView!
-    private var dataSource: DataSource!
-    private var gameInfo = GameInformation()
+    var collectionView: UICollectionView!
+    var dataSource: DataSource!
+    var gameInfo = GameInformation()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,7 +21,7 @@ class CreateNewGameViewController: UIViewController {
         self.initializeViews()
     }
     
-    private func updatePlayerData(forPlayerIndex index: Int, name: String? = nil, character: String? = nil, lootCards: String? = nil) {
+    func updatePlayerData(forPlayerIndex index: Int, name: String? = nil, character: String? = nil, lootCards: String? = nil) {
         guard var player = gameInfo.playerData[index] else { return }
         if let name = name {
             player.name = name
@@ -35,7 +35,7 @@ class CreateNewGameViewController: UIViewController {
         gameInfo.playerData[index] = player
     }
     
-    private func updateGameInfoPlayers() {
+    func updateGameInfoPlayers() {
         let newPlayerCount = self.gameInfo.numberOfPlayers
         for i in 0..<newPlayerCount {
             // Check if the gameInfo contains this characters information.
@@ -146,70 +146,6 @@ extension CreateNewGameViewController: UICollectionViewDelegate {
             return false
         default:
             return true
-        }
-    }
-}
-
-// MARK: - TextEntryCellUpdatedDelegate Function
-extension CreateNewGameViewController: TextEntryCellUpdatedDelegate {
-    func textUpdated(withText text: String, cellTag: Int, parentId: Int?) {
-        switch Row(rawValue: cellTag) {
-        case .teamName:
-            self.gameInfo.teamName = text
-        case .name:
-            guard let parentId = parentId else { return }
-            self.updatePlayerData(forPlayerIndex: parentId, name: text.trimmingCharacters(in: .whitespacesAndNewlines))
-        default:
-            fatalError("Unknown text field cell text updated.")
-        }
-    }
-}
-
-// MARK: - SegmentedControlCellUpdatedDelegate Function
-extension CreateNewGameViewController: SegmentedControlCellUpdatedDelegate {
-    func segmentedControlIndexChanged(itemAtIndex item: String, cellTag: Int) {
-        switch Row(rawValue: cellTag) {
-        case .numberOfPlayers:
-            guard let playerCount: Int = Int(item) else { return }
-            self.gameInfo.numberOfPlayers = playerCount
-            self.dataSource.updatePlayerRows(playerCount: playerCount)
-            self.updateGameInfoPlayers()
-        default:
-            fatalError("Unknown segmented control cell updated.")
-        }
-    }
-}
-
-// MARK: - SwitchListCellUpdatedDelegate Function
-extension CreateNewGameViewController: SwitchListCellUpdatedDelegate {
-    func switchToggled(switchIsOn: Bool) {
-        self.gameInfo.legacyMode = switchIsOn
-        self.dataSource.updateUIForLegacyMode()
-    }
-}
-
-// MARK: - CharacterSelectedDelegate Functions
-extension CreateNewGameViewController: CharacterSelectedDelegate {
-    func updateSelectedCharacter(withCharacter character: String, indexPath: IndexPath) {
-        DispatchQueue.main.async {
-            guard let charItem = self.dataSource.itemIdentifier(for: IndexPath(row: indexPath.row - 1, section: indexPath.section)), let parentId = charItem.parentId else { return }
-            self.updatePlayerData(forPlayerIndex: parentId, character: character)
-            var snap = self.dataSource.snapshot()
-            snap.reloadItems([charItem])
-            self.dataSource.apply(snap, animatingDifferences: false)
-        }
-    }
-}
-
-// MARK: - DifficultySelectedDelegate Functions
-extension CreateNewGameViewController: DifficultySelectedDelegate {
-    func updateSelectedDifficulty(withDifficulty difficulty: Difficulty, indexPath: IndexPath) {
-        DispatchQueue.main.async {
-            guard let diffItem = self.dataSource.itemIdentifier(for: IndexPath(row: indexPath.row - 1, section: indexPath.section)) else { return }
-            self.gameInfo.difficulty = difficulty
-            var snap = self.dataSource.snapshot()
-            snap.reloadItems([diffItem])
-            self.dataSource.apply(snap, animatingDifferences: false)
         }
     }
 }
@@ -375,7 +311,7 @@ extension CreateNewGameViewController {
         }
     }
     
-    private class DataSource: UICollectionViewDiffableDataSource<Section, DataSourceItemInformation> {
+    class DataSource: UICollectionViewDiffableDataSource<Section, DataSourceItemInformation> {
         // Update the Players section to display the correct amount of players selected in the segmented control.
         func updatePlayerRows(playerCount: Int) {
             DispatchQueue.main.async {
@@ -466,14 +402,14 @@ extension CreateNewGameViewController {
 
 // MARK: - CollectionView Modeling Structs and Enums
 extension CreateNewGameViewController {
-    private enum Section: Int, CaseIterable {
+    enum Section: Int, CaseIterable {
         case basicInfo
         case playerInfo
         case scorecard
         case save
     }
     
-    private enum Row: Int {
+    enum Row: Int {
         case unspecified
         case teamName
         case numberOfPlayers
@@ -489,7 +425,7 @@ extension CreateNewGameViewController {
         case save
     }
     
-    private struct DataSourceItemInformation: Hashable {
+    struct DataSourceItemInformation: Hashable {
         let rowType: Row
         let hasChildren: Bool
         var value: String?
@@ -507,7 +443,7 @@ extension CreateNewGameViewController {
         }
     }
     
-    private struct GameInformation {
+    struct GameInformation {
         var teamName: String?
         var difficulty: Difficulty?
         var playerData: [PlayerInformation?] = Array(repeating: nil, count: 4)
@@ -516,14 +452,14 @@ extension CreateNewGameViewController {
         var legacyMode: Bool = false // Legacy mode is off by default.
     }
     
-    private struct PlayerInformation {
+    struct PlayerInformation {
         var playerId: Int
         var name: String
         var character: String
         var lootCards: String
     }
     
-    private struct TextEntryCellInformation {
+    struct TextEntryCellInformation {
         var title: String
         var rowType: Row
         var value: String?
@@ -536,14 +472,14 @@ extension CreateNewGameViewController {
         }
     }
     
-    private struct SegmentedControlCellInformation {
+    struct SegmentedControlCellInformation {
         var title: String
         var rowType: Row
         var items: [Int]
         var selectedIndex: Int = 0
     }
     
-    private struct SwitchCellInformation {
+    struct SwitchCellInformation {
         var title: String
         var switchIsOn: Bool
     }
@@ -579,122 +515,5 @@ extension CreateNewGameViewController {
         case .save:
             return "Save"
         }
-    }
-}
-
-// MARK: - Cell Registration Functions
-extension CreateNewGameViewController {
-    private func createTextEntryListCellRegistration() -> UICollectionView.CellRegistration<TextEntryCollectionViewCell, TextEntryCellInformation> {
-        return UICollectionView.CellRegistration<TextEntryCollectionViewCell, TextEntryCellInformation> { cell, indexPath, data in
-            var config = TextEntryContentConfiguration()
-            config.title = data.title
-            config.tag = data.rowType.rawValue
-            config.textChangedDelegate = self
-            config.isSelectable = data.isSelectable
-            if let val = data.value {
-                config.textValue = val
-            }
-            if let parentId = data.parentId {
-                config.parentId = parentId
-            }
-            cell.contentConfiguration = config
-        }
-    }
-    
-    private func createSegmentedControlListCellRegistration() -> UICollectionView.CellRegistration<SegmentedControlCollectionViewCell, SegmentedControlCellInformation> {
-        return UICollectionView.CellRegistration<SegmentedControlCollectionViewCell, SegmentedControlCellInformation> { cell, indexPath, data in
-            var config = SegmentedControlContentConfiguration()
-            config.title = data.title
-            config.tag = data.rowType.rawValue
-            config.selectedIndex = data.selectedIndex
-            // Convert the int array in the SegmentedControlCellInformation object into an appropriate string.
-            var segmentItems: [String] = []
-            for item in data.items {
-                segmentItems.append("\(item)")
-            }
-            // Assign the items for the segmented control.
-            config.items = segmentItems
-            
-            config.segmentedControlUpdateDelegate = self
-            cell.contentConfiguration = config
-        }
-    }
-    
-    private func createCharacterPickerViewListCellRegistration() -> UICollectionView.CellRegistration<UICollectionViewListCell, String> {
-        UICollectionView.CellRegistration<UICollectionViewListCell, String> { cell, indexPath, data in
-            var config = CharacterPickerViewContentConfiguration()
-            config.indexPath = indexPath
-            config.delegate = self
-            config.currentSelection = data
-            cell.contentConfiguration = config
-        }
-    }
-    
-    private func createDifficultyPickerViewListCellRegistration() -> UICollectionView.CellRegistration<UICollectionViewListCell, String> {
-        UICollectionView.CellRegistration<UICollectionViewListCell, String> { cell, indexPath, data in
-            var config = DifficultyPickerViewContentConfiguration()
-            config.indexPath = indexPath
-            config.delegate = self
-            config.currentSelection = self.gameInfo.difficulty
-            config.legacyMode = self.gameInfo.legacyMode
-            cell.contentConfiguration = config
-        }
-    }
-    
-    private func createHeaderListCellRegistration() -> UICollectionView.CellRegistration<UICollectionViewListCell, String> {
-        return UICollectionView.CellRegistration<UICollectionViewListCell, String> { cell, indexPath, title in
-            var content = cell.defaultContentConfiguration()
-            content.text = title
-            cell.contentConfiguration = content
-            cell.accessories = [.outlineDisclosure(options: .init(style: .header))]
-        }
-    }
-    
-    private func createDisclosureItemListCellRegistration() -> UICollectionView.CellRegistration<UICollectionViewListCell, String> {
-        return UICollectionView.CellRegistration<UICollectionViewListCell, String> { cell, indexPath, title in
-            var content = cell.defaultContentConfiguration()
-            content.text = title
-            cell.contentConfiguration = content
-            cell.accessories = [.disclosureIndicator()]
-        }
-    }
-    
-    private func createSwitchListCellRegistration() -> UICollectionView.CellRegistration<UICollectionViewListCell, SwitchCellInformation> {
-        return UICollectionView.CellRegistration<UICollectionViewListCell, SwitchCellInformation> { cell, indexPath, data in
-            var config = SwitchListContentConfiguration()
-            config.title = data.title
-            config.switchIsOn = data.switchIsOn
-            config.switchListCellUpdatedDelegate = self
-            cell.contentConfiguration = config
-        }
-    }
-    
-    private func createSaveListCellRegistration() -> UICollectionView.CellRegistration<UICollectionViewListCell, String> {
-        return UICollectionView.CellRegistration<UICollectionViewListCell, String> { cell, indexPath, title in
-            var content = cell.defaultContentConfiguration()
-            content.text = title
-            content.textProperties.color = .systemBlue
-            content.textProperties.alignment = .center
-            cell.contentConfiguration = content
-        }
-    }
-}
-
-//MARK: - Keyboard Show/Hide Functions
-extension CreateNewGameViewController {
-    private func registerKeyboardNotifications() {
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
-    }
-    
-    @objc private func keyboardWillShow(sender: NSNotification) {
-        let info = sender.userInfo!
-        let keyboardSize = (info[UIResponder.keyboardFrameEndUserInfoKey] as! NSValue).cgRectValue.height
-
-        self.collectionView.contentInset.bottom = keyboardSize
-    }
-
-    @objc private func keyboardWillHide(sender: NSNotification) {
-        self.collectionView.contentInset.bottom = 0
     }
 }

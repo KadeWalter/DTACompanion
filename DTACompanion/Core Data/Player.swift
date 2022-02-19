@@ -33,11 +33,30 @@ extension Player {
         player.index = Int64(index)
         
         do {
-            try self.GenericManagedObjectContext().save()
+            try context.save()
         } catch {
             fatalError("Unexpected Error: \(error)")
         }
         return player
+    }
+}
+
+// MARK: - Fetch Players
+extension Player {
+    class func findAll() -> [Player] {
+        return findAll(withContext: self.GenericManagedObjectContext())
+    }
+    
+    class func findAll(withContext context: NSManagedObjectContext) -> [Player] {
+        do {
+            let request = NSFetchRequest<Player>(entityName: self.identifier())
+            let sortByIndex = NSSortDescriptor(key: "index", ascending: true)
+            request.sortDescriptors = [sortByIndex]
+            let games = try context.fetch(request)
+            return games
+        } catch {
+            return []
+        }
     }
 }
 

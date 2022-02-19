@@ -143,12 +143,18 @@ class CharacterPickerViewContentView: UIView, UIContentView, UIPickerViewDelegat
     private func setCharacters() -> [[String]] {
         var characterMatrix: [[String]] = []
         for season in Seasons.allCases {
+            var chars: [String] = []
             switch season {
             case .seasonOne:
-                characterMatrix.append(["Barb", "Shadow Thief"])
+                for character in SeasonOneCharacters.allCases {
+                    chars.append(character.description)
+                }
             case .seasonTwo:
-                characterMatrix.append(["Artificer", "Huntress"])
+                for character in SeasonTwoCharacters.allCases {
+                    chars.append(character.description)
+                }
             }
+            characterMatrix.append(chars)
         }
         return characterMatrix
     }
