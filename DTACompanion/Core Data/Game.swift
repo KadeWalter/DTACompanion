@@ -16,7 +16,7 @@ class Game: GenericNSManagedObject {
     @NSManaged public var latestUpdate: Date
     @NSManaged public var difficulty: String
     @NSManaged public var players: Set<Player>
-    @NSManaged public var sessions: Set<Scenario>?
+    @NSManaged public var scenarios: Set<Scenario>?
     
     override class func identifier() -> String {
         return String(describing: self)
@@ -28,6 +28,26 @@ class Game: GenericNSManagedObject {
     
     func player(forIndex index: Int) -> Player? {
         return self.players.filter({ $0.index == index}).first
+    }
+    
+    func scenariosAsArray() -> [Scenario]? {
+        if let scenarios = self.scenarios {
+            return Array(scenarios).sorted(by: { $0.dateCreated < $1.dateCreated })
+        }
+        return nil
+    }
+    
+    func addScenario(scenario: Scenario) {
+        if self.scenarios == nil {
+            self.scenarios = Set<Scenario>()
+        }
+        self.scenarios?.insert(scenario)
+        
+        do {
+            try self.managedObjectContext?.save()
+        } catch {
+            fatalError("Error saving scenario to game.")
+        }
     }
 }
 
@@ -81,7 +101,11 @@ extension Game {
     
     @discardableResult func deleteGame(context: NSManagedObjectContext) -> Bool {
         var gameDeleted: Bool = false
+        
+        // Delete any players and scenarios tied to the game.
         Player.deleteMultiplePlayers(players: self.players)
+        Scenario.deleteMultipleScenarios(scenarios: self.scenarios ?? [])
+        
         context.delete(self)
         do {
             try context.save()

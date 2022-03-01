@@ -51,7 +51,6 @@ class TextEntryContentView: UIView, UIContentView, UITextFieldDelegate {
     
     lazy var titleLabel = createLabel()
     lazy var textField = createTextField()
-    weak var textUpdatedDelegate: TextEntryCellUpdatedDelegate?
     
     init(config: TextEntryContentConfiguration) {
         super.init(frame: .zero)
@@ -69,8 +68,7 @@ class TextEntryContentView: UIView, UIContentView, UITextFieldDelegate {
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
-        guard var text = textField.text else { return }
-        text = text.replacingOccurrences(of: "\u{00a0}", with: " ")
+        guard let text = textField.text else { return }
         currentConfig.textChangedDelegate?.textUpdated(withText: text, cellTag: currentConfig.tag ?? 0, parentId: currentConfig.parentId)
     }
     

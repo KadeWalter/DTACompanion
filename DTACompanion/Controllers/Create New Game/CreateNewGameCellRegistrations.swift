@@ -45,8 +45,8 @@ extension CreateNewGameViewController {
         }
     }
     
-    func createCharacterPickerViewListCellRegistration() -> UICollectionView.CellRegistration<UICollectionViewListCell, String> {
-        UICollectionView.CellRegistration<UICollectionViewListCell, String> { cell, indexPath, data in
+    func createCharacterPickerViewListCellRegistration() -> UICollectionView.CellRegistration<CharacterPickerViewCollectionViewCell, String> {
+        UICollectionView.CellRegistration<CharacterPickerViewCollectionViewCell, String> { cell, indexPath, data in
             var config = CharacterPickerViewContentConfiguration()
             config.indexPath = indexPath
             config.delegate = self
@@ -55,8 +55,8 @@ extension CreateNewGameViewController {
         }
     }
     
-    func createDifficultyPickerViewListCellRegistration() -> UICollectionView.CellRegistration<UICollectionViewListCell, String> {
-        UICollectionView.CellRegistration<UICollectionViewListCell, String> { cell, indexPath, data in
+    func createDifficultyPickerViewListCellRegistration() -> UICollectionView.CellRegistration<DifficultyPickerViewCollectionViewCell, String> {
+        UICollectionView.CellRegistration<DifficultyPickerViewCollectionViewCell, String> { cell, indexPath, data in
             var config = DifficultyPickerViewContentConfiguration()
             config.indexPath = indexPath
             config.delegate = self
@@ -84,8 +84,8 @@ extension CreateNewGameViewController {
         }
     }
     
-    func createSwitchListCellRegistration() -> UICollectionView.CellRegistration<UICollectionViewListCell, SwitchCellInformation> {
-        return UICollectionView.CellRegistration<UICollectionViewListCell, SwitchCellInformation> { cell, indexPath, data in
+    func createSwitchListCellRegistration() -> UICollectionView.CellRegistration<SwitchListCollectionViewCell, SwitchCellInformation> {
+        return UICollectionView.CellRegistration<SwitchListCollectionViewCell, SwitchCellInformation> { cell, indexPath, data in
             var config = SwitchListContentConfiguration()
             config.title = data.title
             config.switchIsOn = data.switchIsOn

@@ -12,4 +12,18 @@ public enum Difficulty: String {
     case veteran = "Veteran"
     case hardcore = "Hardcore"
     case insane = "Insane"
+    
+    func score() -> Int {
+        // TODO: - Update these to the correct values:
+        switch self {
+        case .normal:
+            return 20
+        case .veteran:
+            return 30
+        case .hardcore:
+            return 40
+        case .insane:
+            return 50
+        }
+    }
 }

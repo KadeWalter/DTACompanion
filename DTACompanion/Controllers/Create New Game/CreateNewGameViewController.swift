@@ -163,10 +163,6 @@ extension CreateNewGameViewController {
         // Make sure we create this default player in the self.gameInfo object:
         self.gameInfo.playerData[playerId] = PlayerInformation(playerId: playerId, name: "", character: "", lootCards: "")
         
-        // Apply the scorecard section
-        var scorecardSnapshot = NSDiffableDataSourceSectionSnapshot<DataSourceItemInformation>()
-        scorecardSnapshot.append([DataSourceItemInformation(row: .scorecard)])
-        
         // Finally, apply the save button section
         var saveSnapshot = NSDiffableDataSourceSectionSnapshot<DataSourceItemInformation>()
         saveSnapshot.append([DataSourceItemInformation(row: .save)])
@@ -175,7 +171,6 @@ extension CreateNewGameViewController {
         self.dataSource.apply(snapshot)
         self.dataSource.apply(basicInfoSnapshot, to: .basicInfo, animatingDifferences: false)
         self.dataSource.apply(playerSnapshot, to: .playerInfo, animatingDifferences: false)
-        self.dataSource.apply(scorecardSnapshot, to: .scorecard, animatingDifferences: false)
         self.dataSource.apply(saveSnapshot, to: .save, animatingDifferences: false)
     }
 }
@@ -189,7 +184,7 @@ extension CreateNewGameViewController: UICollectionViewDelegate {
         
         switch item.rowType {
         case .name, .teamName:
-            if let cell = collectionView.cellForItem(at: indexPath) as? TextEntryCollectionViewCell, let contentView = cell.contentView as? TextEntryContentView, item.rowType != .character {
+            if let cell = collectionView.cellForItem(at: indexPath) as? TextEntryCollectionViewCell, let contentView = cell.contentView as? TextEntryContentView {
                 contentView.textField.becomeFirstResponder()
             }
         case .character:
@@ -214,7 +209,6 @@ extension CreateNewGameViewController: UICollectionViewDelegate {
         case .save:
             self.saveGameData()
         default:
-            // TODO: - Navigate to correct screens for player loot cards and sessions.
             return
         }
     }
@@ -230,7 +224,7 @@ extension CreateNewGameViewController: UICollectionViewDelegate {
     }
 }
 
-// MARK: - DataSource Configuration and Cell Registration
+// MARK: - DataSource Configuration
 extension CreateNewGameViewController {
     private func configureDataSource() {
         // Register dequeuable cells.
@@ -310,8 +304,6 @@ extension CreateNewGameViewController {
                         break
                     }
                 }
-            case .scorecard:
-                return collectionView.dequeueConfiguredReusableCell(using: disclosureItemCell, for: indexPath, item: rowTitle)
             case .save:
                 return collectionView.dequeueConfiguredReusableCell(using: saveCell, for: indexPath, item: rowTitle)
             }
@@ -413,7 +405,6 @@ extension CreateNewGameViewController {
     enum Section: Int, CaseIterable {
         case basicInfo
         case playerInfo
-        case scorecard
         case save
     }
     
@@ -429,7 +420,6 @@ extension CreateNewGameViewController {
         case character
         case characterPicker
         case lootCards
-        case scorecard
         case save
     }
     
@@ -518,8 +508,6 @@ extension CreateNewGameViewController {
             return ""
         case .lootCards:
             return "Loot Cards"
-        case .scorecard:
-            return "Edit Scorecard"
         case .save:
             return "Save"
         }

@@ -26,6 +26,7 @@ class ViewExistingGameViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = game.teamName
+        self.navigationItem.backButtonTitle = "Back"
         
         self.initializeViews()
     }
@@ -95,10 +96,10 @@ extension ViewExistingGameViewController {
         // Overall snapshot:
         var snapshot = NSDiffableDataSourceSnapshot<Section, ExistingGameData>()
         // Append all of the sections to the snapshot:
-        let sections = [
-            Section.basicInfo,
-            Section.players,
-            Section.scorecard
+        let sections: [Section] = [
+            .basicInfo,
+            .players,
+            .scorecard
         ]
         snapshot.appendSections(sections)
         
@@ -149,8 +150,14 @@ extension ViewExistingGameViewController {
 extension ViewExistingGameViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         self.collectionView.deselectItem(at: indexPath, animated: true)
-        // TODO: - Navigate to correct screens for player loot cards and sessions.
-        return
+        guard let item = self.dataSource.itemIdentifier(for: indexPath) else { return }
+        switch item.rowType {
+        case .scoreCard:
+            let vc = ScenarioManagerViewController(withGame: game)
+            self.navigationController?.pushViewController(vc, animated: true)
+        default:
+            return
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, shouldHighlightItemAt indexPath: IndexPath) -> Bool {

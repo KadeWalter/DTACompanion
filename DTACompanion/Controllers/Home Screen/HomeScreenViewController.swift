@@ -31,7 +31,7 @@ class HomeScreenViewController: UIViewController {
         self.title = "DTA Companion"
         self.navigationItem.backButtonTitle = "Back"
         self.tableView.register(GameOverviewTableViewCell.self, forCellReuseIdentifier: GameOverviewTableViewCell.identifier)
-
+        
         self.initializeViews()
     }
     
@@ -45,28 +45,34 @@ extension HomeScreenViewController: DeleteGameProtocol {
     func deleteGame(forIndexPath indexPath: IndexPath) {
         let alert = UIAlertController(title: "Are You Sure?", message: "Are you sure you want to delete this game?", preferredStyle: .alert)
         let yesButton = UIAlertAction(title: "Yes", style: .destructive) { _ in
-            alert.dismiss(animated: true)
-            guard indexPath.row < self.allGames.count else { return }
-            
-            // Get the Game object to delete.
-            let gameToDelete = self.allGames[indexPath.row]
-            
-            // Delete the game from Core Data.
-            if gameToDelete.deleteGame() {
-                // If the game was deleted from Core Data, remove it from the allGames array.
-                self.allGames.remove(at: indexPath.row)
+            DispatchQueue.main.async {
+                alert.dismiss(animated: true)
+                guard indexPath.row < self.allGames.count else { return }
                 
-                // Update the snapshot to remove the cell for the game that was deleted.
-                self.dataSource.deleteGameFromSnapshot(atIndexPath: indexPath)
+                // Get the Game object to delete.
+                let gameToDelete = self.allGames[indexPath.row]
+                
+                // Delete the game from Core Data.
+                if gameToDelete.deleteGame() {
+                    // If the game was deleted from Core Data, remove it from the allGames array.
+                    self.allGames.remove(at: indexPath.row)
+                    
+                    // Update the snapshot to remove the cell for the game that was deleted.
+                    self.dataSource.deleteGameFromSnapshot(atIndexPath: indexPath)
+                }
             }
         }
         let noButton = UIAlertAction(title: "No", style: .cancel) { _ in
-            // User reconsidered their choices, so lets not do anything :)
-            alert.dismiss(animated: true)
+            DispatchQueue.main.async {
+                // User reconsidered their choices, so lets not do anything :)
+                alert.dismiss(animated: true)
+            }
         }
-        alert.addAction(yesButton)
-        alert.addAction(noButton)
-        self.navigationController?.present(alert, animated: true)
+        DispatchQueue.main.async {
+            alert.addAction(yesButton)
+            alert.addAction(noButton)
+            self.navigationController?.present(alert, animated: true)
+        }
     }
 }
 
@@ -182,6 +188,7 @@ extension HomeScreenViewController {
         override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
             return indexPath.section != 0
         }
+        
         override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
             if editingStyle == .delete {
                 deleteDelegate?.deleteGame(forIndexPath: indexPath)

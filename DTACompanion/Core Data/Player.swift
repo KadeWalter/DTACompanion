@@ -52,8 +52,8 @@ extension Player {
             let request = NSFetchRequest<Player>(entityName: self.identifier())
             let sortByIndex = NSSortDescriptor(key: "index", ascending: true)
             request.sortDescriptors = [sortByIndex]
-            let games = try context.fetch(request)
-            return games
+            let players = try context.fetch(request)
+            return players
         } catch {
             return []
         }
