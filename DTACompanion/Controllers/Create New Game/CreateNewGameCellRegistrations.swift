@@ -75,12 +75,11 @@ extension CreateNewGameViewController {
         }
     }
     
-    func createDisclosureItemListCellRegistration() -> UICollectionView.CellRegistration<UICollectionViewListCell, String> {
+    func createNoteListCellRegistration() -> UICollectionView.CellRegistration<UICollectionViewListCell, String> {
         return UICollectionView.CellRegistration<UICollectionViewListCell, String> { cell, indexPath, title in
             var content = cell.defaultContentConfiguration()
-            content.text = title
+            content.text = "Please save this game to edit the player loot cards and the scorecard."
             cell.contentConfiguration = content
-            cell.accessories = [.disclosureIndicator()]
         }
     }
     

@@ -151,17 +151,19 @@ extension CreateNewGameViewController {
         // Create the player data cells:
         var name = DataSourceItemInformation(row: .name)
         var character = DataSourceItemInformation(row: .character)
-        var lootCards = DataSourceItemInformation(row: .lootCards)
         // Assign the parent id's
         name.parentId = playerId
         character.parentId = playerId
-        lootCards.parentId = playerId
-        let playerInformationRows = [name, character, lootCards]
+        let playerInformationRows = [name, character]
         // Append the player data cells to the player header row in the snapshot:
         playerSnapshot.append(playerInformationRows, to: playerRoot)
         
         // Make sure we create this default player in the self.gameInfo object:
         self.gameInfo.playerData[playerId] = PlayerInformation(playerId: playerId, name: "", character: "", lootCards: "")
+        
+        // Add the section saying to save before updating the loot cards and scorecard
+        var saveToEditSnapshot = NSDiffableDataSourceSectionSnapshot<DataSourceItemInformation>()
+        saveToEditSnapshot.append([DataSourceItemInformation(row: .saveToEditLootAndScore)])
         
         // Finally, apply the save button section
         var saveSnapshot = NSDiffableDataSourceSectionSnapshot<DataSourceItemInformation>()
@@ -171,6 +173,7 @@ extension CreateNewGameViewController {
         self.dataSource.apply(snapshot)
         self.dataSource.apply(basicInfoSnapshot, to: .basicInfo, animatingDifferences: false)
         self.dataSource.apply(playerSnapshot, to: .playerInfo, animatingDifferences: false)
+        self.dataSource.apply(saveToEditSnapshot, to: .saveToEdit, animatingDifferences: false)
         self.dataSource.apply(saveSnapshot, to: .save, animatingDifferences: false)
     }
 }
@@ -233,7 +236,7 @@ extension CreateNewGameViewController {
         let charPickerViewCell = createCharacterPickerViewListCellRegistration()
         let diffPickerViewCell = createDifficultyPickerViewListCellRegistration()
         let listHeaderCell = createHeaderListCellRegistration()
-        let disclosureItemCell = createDisclosureItemListCellRegistration()
+        let noteCell = createNoteListCellRegistration()
         let saveCell = createSaveListCellRegistration()
         let switchCell = createSwitchListCellRegistration()
         
@@ -298,12 +301,12 @@ extension CreateNewGameViewController {
                         guard let parentId = info.parentId else { return UICollectionViewListCell() }
                         let characterSelection = self.gameInfo.playerData[parentId]?.character
                         return collectionView.dequeueConfiguredReusableCell(using: charPickerViewCell, for: indexPath, item: characterSelection)
-                    case .lootCards:
-                        return collectionView.dequeueConfiguredReusableCell(using: disclosureItemCell, for: indexPath, item: rowTitle)
                     default:
                         break
                     }
                 }
+            case .saveToEdit:
+                return collectionView.dequeueConfiguredReusableCell(using: noteCell, for: indexPath, item: rowTitle)
             case .save:
                 return collectionView.dequeueConfiguredReusableCell(using: saveCell, for: indexPath, item: rowTitle)
             }
@@ -322,12 +325,10 @@ extension CreateNewGameViewController {
                     playerSnapshot.append([playerRoot])
                     var name = DataSourceItemInformation(row: .name)
                     var character = DataSourceItemInformation(row: .character)
-                    var lootCards = DataSourceItemInformation(row: .lootCards)
                     // Assign the parent id's
                     name.parentId = i
                     character.parentId = i
-                    lootCards.parentId = i
-                    let playerInformationRows = [name, character, lootCards]
+                    let playerInformationRows = [name, character]
                     playerSnapshot.append(playerInformationRows, to: playerRoot)
                 }
                 self.apply(playerSnapshot, to: .playerInfo, animatingDifferences: true)
@@ -405,6 +406,7 @@ extension CreateNewGameViewController {
     enum Section: Int, CaseIterable {
         case basicInfo
         case playerInfo
+        case saveToEdit
         case save
     }
     
@@ -419,7 +421,7 @@ extension CreateNewGameViewController {
         case name
         case character
         case characterPicker
-        case lootCards
+        case saveToEditLootAndScore
         case save
     }
     
@@ -506,8 +508,8 @@ extension CreateNewGameViewController {
             return "Character"
         case .characterPicker:
             return ""
-        case .lootCards:
-            return "Loot Cards"
+        case .saveToEditLootAndScore:
+            return ""
         case .save:
             return "Save"
         }

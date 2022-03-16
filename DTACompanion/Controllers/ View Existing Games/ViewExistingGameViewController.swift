@@ -64,7 +64,7 @@ extension ViewExistingGameViewController {
         self.dataSource = UICollectionViewDiffableDataSource<Section, ExistingGameData>(collectionView: self.collectionView) { (collectionView, indexPath, gameData) -> UICollectionViewListCell in
             let title = gameData.rowType == .playerHeader ? self.titleForRow(row: gameData.rowType, playerId: gameData.playerParentId) : self.titleForRow(row: gameData.rowType)
             switch gameData.rowType {
-            case .scoreCard, .playerLootCards:
+            case .scoreCard, .lootCards:
                 return collectionView.dequeueConfiguredReusableCell(using: disclosureCell, for: indexPath, item: title)
             case .playerHeader:
                 return collectionView.dequeueConfiguredReusableCell(using: playerHeaderCell, for: indexPath, item: title)
@@ -99,7 +99,7 @@ extension ViewExistingGameViewController {
         let sections: [Section] = [
             .basicInfo,
             .players,
-            .scorecard
+            .editLootAndScore
         ]
         snapshot.appendSections(sections)
         
@@ -128,22 +128,23 @@ extension ViewExistingGameViewController {
             name.playerParentId = i
             var character = ExistingGameData(rowType: .playerCharacter)
             character.playerParentId = i
-            var lootCards = ExistingGameData(rowType: .playerLootCards)
-            lootCards.playerParentId = i
             
             // Append the player data rows to the player header:
-            playerSnapshot.append([name, character, lootCards], to: playerHeader)
+            playerSnapshot.append([name, character], to: playerHeader)
         }
         
         // Scorecard section snapshot:
         var scorecardSnapshot = NSDiffableDataSourceSectionSnapshot<ExistingGameData>()
-        scorecardSnapshot.append([ExistingGameData(rowType: .scoreCard)])
+        scorecardSnapshot.append([
+                                    ExistingGameData(rowType: .lootCards),
+                                    ExistingGameData(rowType: .scoreCard)
+                                 ])
         
         // Apply the snapshot to the datasource and apply all of the section snapshots to the overall snapshot:
         self.dataSource.apply(snapshot)
         self.dataSource.apply(basicInfoSnapshot, to: .basicInfo, animatingDifferences: false)
         self.dataSource.apply(playerSnapshot, to: .players, animatingDifferences: false)
-        self.dataSource.apply(scorecardSnapshot, to: .scorecard, animatingDifferences: false)
+        self.dataSource.apply(scorecardSnapshot, to: .editLootAndScore, animatingDifferences: false)
     }
 }
 
@@ -164,7 +165,7 @@ extension ViewExistingGameViewController: UICollectionViewDelegate {
         // Only allow the player loot cards and scorecard rows to be selectable.
         guard let item = self.dataSource.itemIdentifier(for: indexPath) else { return false }
         switch item.rowType {
-        case .playerLootCards, .scoreCard:
+        case .lootCards, .scoreCard:
             return true
         default:
             return false
@@ -223,7 +224,7 @@ extension ViewExistingGameViewController {
     private enum Section {
         case basicInfo
         case players
-        case scorecard
+        case editLootAndScore
     }
     
     private enum Row {
@@ -234,7 +235,7 @@ extension ViewExistingGameViewController {
         case playerHeader
         case playerName
         case playerCharacter
-        case playerLootCards
+        case lootCards
         case scoreCard
     }
     
@@ -282,8 +283,8 @@ extension ViewExistingGameViewController {
             return "Name"
         case .playerCharacter:
             return "Character"
-        case .playerLootCards:
-            return "Loot Cards"
+        case .lootCards:
+            return "Edit Loot Cards"
         case .scoreCard:
             return "Edit Scorecard"
         }

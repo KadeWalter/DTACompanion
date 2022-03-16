@@ -121,8 +121,9 @@ extension HomeScreenViewController {
     }
     
     private func configureDataSource() {
-        self.dataSource = DataSource(tableView: tableView) {
+        self.dataSource = DataSource(tableView: tableView) { [weak self]
             (tableView: UITableView, indexPath: IndexPath, data: RowData) -> UITableViewCell? in
+            guard let self = self else { return nil }
             
             if indexPath.section == Section.createNewGame.rawValue {
                 let cell = tableView.dequeueReusableCell(withIdentifier: HomeScreenViewController.reuseIdentifier, for: indexPath)
