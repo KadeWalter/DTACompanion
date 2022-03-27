@@ -16,9 +16,10 @@ class Game: GenericNSManagedObject {
     @NSManaged public var latestUpdate: Date
     @NSManaged public var difficulty: String
     @NSManaged public var players: Set<Player>
+    @NSManaged public var lootCards: Set<LootCard>
     @NSManaged public var scenarios: Set<Scenario>?
     
-    override class func identifier() -> String {
+    class func identifier() -> String {
         return String(describing: self)
     }
     
@@ -53,11 +54,7 @@ class Game: GenericNSManagedObject {
 
 // MARK: - Save Games
 extension Game {
-    class func saveNewGame(teamName: String, numberOfPlayers: Int, legacyMode: Bool, difficulty: Difficulty, players: Set<Player>, dateCreated: Date) {
-        saveNewGame(teamName: teamName, numberOfPlayers: numberOfPlayers, legacyMode: legacyMode, difficulty: difficulty, players: players, dateCreated: dateCreated, context: self.GenericManagedObjectContext())
-    }
-    
-    class func saveNewGame(teamName: String, numberOfPlayers: Int, legacyMode: Bool, difficulty: Difficulty, players: Set<Player>, dateCreated: Date, context: NSManagedObjectContext) {
+    class func saveNewGame(teamName: String, numberOfPlayers: Int, legacyMode: Bool, difficulty: Difficulty, players: Set<Player>, dateCreated: Date, inContext context: NSManagedObjectContext) {
         let game = Game(context: context)
         game.teamName = teamName
         game.numberOfPlayers = Int64(numberOfPlayers)
@@ -65,6 +62,8 @@ extension Game {
         game.latestUpdate = dateCreated
         game.difficulty = difficulty.rawValue
         game.players = players
+        
+        LootCard.saveLootCardsJSON(toGame: game, inContext: context)
         
         do {
             try context.save()
@@ -76,11 +75,7 @@ extension Game {
 
 // MARK: - Fetch Games
 extension Game {
-    class func findAll() -> [Game] {
-        return findAll(withContext: self.GenericManagedObjectContext())
-    }
-    
-    class func findAll(withContext context: NSManagedObjectContext) -> [Game] {
+    class func findAll(inContext context: NSManagedObjectContext) -> [Game] {
         do {
             let request = NSFetchRequest<Game>(entityName: self.identifier())
             let sortByCreationDate = NSSortDescriptor(key: "latestUpdate", ascending: false)
@@ -95,16 +90,13 @@ extension Game {
 
 // MARK: - Delete A Game
 extension Game {
-    @discardableResult func deleteGame() -> Bool {
-        return deleteGame(context: Game.GenericManagedObjectContext())
-    }
-    
-    @discardableResult func deleteGame(context: NSManagedObjectContext) -> Bool {
+    @discardableResult func deleteGame(inContext context: NSManagedObjectContext) -> Bool {
         var gameDeleted: Bool = false
         
         // Delete any players and scenarios tied to the game.
-        Player.deleteMultiplePlayers(players: self.players)
-        Scenario.deleteMultipleScenarios(scenarios: self.scenarios ?? [])
+        Player.deleteMultiplePlayers(players: self.players, inContext: context)
+        Scenario.deleteMultipleScenarios(scenarios: self.scenarios ?? [], inContext: context)
+        LootCard.deleteLootCards(fromGame: self, inContext: context)
         
         context.delete(self)
         do {

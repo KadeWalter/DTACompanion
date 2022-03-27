@@ -12,7 +12,7 @@ protocol SegmentedControlCellUpdatedDelegate: AnyObject {
 }
 
 class SegmentedControlCollectionViewCell: UICollectionViewListCell {
-    static let identifier = String(describing: self)
+    static let identifier = String(describing: SegmentedControlCollectionViewCell.self)
 }
 
 struct SegmentedControlContentConfiguration: UIContentConfiguration, Equatable {

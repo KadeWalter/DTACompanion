@@ -13,14 +13,15 @@ protocol DeleteGameProtocol: AnyObject {
 
 class HomeScreenViewController: UIViewController {
     
-    static let reuseIdentifier = String(describing: self)
+    static let reuseIdentifier = String(describing: HomeScreenViewController.self)
     
     private let tableView = UITableView(frame: .zero, style: .insetGrouped)
     private var dataSource: DataSource!
     private var allGames: [Game] = []
+    private let context = GenericNSManagedObject.GenericManagedObjectContext()
     
     override func viewWillAppear(_ animated: Bool) {
-        self.allGames = Game.findAll()
+        self.allGames = Game.findAll(inContext: self.context)
         DispatchQueue.main.async {
             self.reloadGameData()
         }
@@ -53,7 +54,7 @@ extension HomeScreenViewController: DeleteGameProtocol {
                 let gameToDelete = self.allGames[indexPath.row]
                 
                 // Delete the game from Core Data.
-                if gameToDelete.deleteGame() {
+                if gameToDelete.deleteGame(inContext: self.context) {
                     // If the game was deleted from Core Data, remove it from the allGames array.
                     self.allGames.remove(at: indexPath.row)
                     

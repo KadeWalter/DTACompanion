@@ -12,7 +12,7 @@ protocol CharacterSelectedDelegate: AnyObject {
 }
 
 class CharacterPickerViewCollectionViewCell: UICollectionViewListCell {
-    static let identifier = String(describing: self)
+    static let identifier = String(describing: CharacterPickerViewCollectionViewCell.self)
 }
 
 struct CharacterPickerViewContentConfiguration: UIContentConfiguration, Equatable {

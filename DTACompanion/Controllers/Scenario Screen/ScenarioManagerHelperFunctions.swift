@@ -70,7 +70,7 @@ extension ScenarioManagerViewController {
         let win = scenarioInfo.wonScenario
         let total = scenarioInfo.totalScore
         
-        let scenario = Scenario.saveNewScenario(scenarioNumber: number, remainingSalves: salves, unspentGold: gold, unclaimedBossLoot: bossLoot, exploration: expl, scenarioScore: scenScore, win: win, totalScore: total)
+        let scenario = Scenario.saveNewScenario(scenarioNumber: number, remainingSalves: salves, unspentGold: gold, unclaimedBossLoot: bossLoot, exploration: expl, scenarioScore: scenScore, win: win, totalScore: total, inContext: self.context)
         self.game.addScenario(scenario: scenario)
         
         // Recalculate the total campaign score:
@@ -92,7 +92,7 @@ extension ScenarioManagerViewController {
         }
         let yesAction = UIAlertAction(title: "Yes", style: .destructive) { _ in
             
-            scenario.deleteScenario()
+            scenario.deleteScenario(inContext: self.context)
             
             // Recalculate the total campaign score:
             self.calculateCampaignTotal()

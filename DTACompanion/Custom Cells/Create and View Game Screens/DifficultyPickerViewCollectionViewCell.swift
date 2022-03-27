@@ -12,7 +12,7 @@ protocol DifficultySelectedDelegate: AnyObject {
 }
 
 class DifficultyPickerViewCollectionViewCell: UICollectionViewListCell {
-    static let identifier = String(describing: self)
+    static let identifier = String(describing: DifficultyPickerViewCollectionViewCell.self)
 }
 
 struct DifficultyPickerViewContentConfiguration: UIContentConfiguration, Equatable {
@@ -122,8 +122,8 @@ class DifficultyPickerViewContentView: UIView, UIContentView, UIPickerViewDelega
     private func setDifficulties() -> [Difficulty] {
         var diffs = [Difficulty.normal, Difficulty.veteran]
         if self.legacyEnabled ?? false {
-            diffs.append(Difficulty.hardcore)
             diffs.append(Difficulty.insane)
+            diffs.append(Difficulty.hardcore)
         }
         return diffs
     }

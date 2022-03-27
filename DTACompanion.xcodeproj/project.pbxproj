@@ -44,6 +44,8 @@
 		19F35A6F27CC297100A9F438 /* ScenarioManagerCellRegistration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19F35A6E27CC297100A9F438 /* ScenarioManagerCellRegistration.swift */; };
 		19F35A7127CC2A6900A9F438 /* ScenarioManagerHelperFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19F35A7027CC2A6900A9F438 /* ScenarioManagerHelperFunctions.swift */; };
 		19F5A44227C17FF5007AC856 /* DataDisplayCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19F5A44127C17FF5007AC856 /* DataDisplayCollectionViewCell.swift */; };
+		19FBC17C27EED64800B3E47D /* LootPlayerSelectionTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19FBC17B27EED64800B3E47D /* LootPlayerSelectionTableViewController.swift */; };
+		19FBC17E27F0BE6E00B3E47D /* LootCardsData.json in Resources */ = {isa = PBXBuildFile; fileRef = 19FBC17D27F0BE6E00B3E47D /* LootCardsData.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -97,6 +99,8 @@
 		19F35A6E27CC297100A9F438 /* ScenarioManagerCellRegistration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScenarioManagerCellRegistration.swift; sourceTree = "<group>"; };
 		19F35A7027CC2A6900A9F438 /* ScenarioManagerHelperFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScenarioManagerHelperFunctions.swift; sourceTree = "<group>"; };
 		19F5A44127C17FF5007AC856 /* DataDisplayCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataDisplayCollectionViewCell.swift; sourceTree = "<group>"; };
+		19FBC17B27EED64800B3E47D /* LootPlayerSelectionTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LootPlayerSelectionTableViewController.swift; sourceTree = "<group>"; };
+		19FBC17D27F0BE6E00B3E47D /* LootCardsData.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = LootCardsData.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -153,12 +157,12 @@
 			path = "Home Screen";
 			sourceTree = "<group>";
 		};
-		1950685F27BFE3B100E0274D /*  View Existing Games */ = {
+		1950685F27BFE3B100E0274D /* View Existing Games */ = {
 			isa = PBXGroup;
 			children = (
 				1950686027BFE3F300E0274D /* ViewExistingGameViewController.swift */,
 			);
-			path = " View Existing Games";
+			path = "View Existing Games";
 			sourceTree = "<group>";
 		};
 		195B6A8527BDD424007A2790 /* Create and View Game Screens */ = {
@@ -245,12 +249,12 @@
 		19ED309F27B0AF840013766B /* DTACompanion */ = {
 			isa = PBXGroup;
 			children = (
-				19CAB10A27BC4600001D21F6 /* Public Enums */,
 				19ED30D427B0B09E0013766B /* App Assets */,
 				19ED30D327B0B08B0013766B /* App Delegate */,
 				19ED30D527B0B1040013766B /* Controllers */,
 				1940FDC927B57D7E00C69111 /* Custom Cells */,
 				19DB18A827BC1A030076AE52 /* Core Data */,
+				19CAB10A27BC4600001D21F6 /* Public Enums */,
 			);
 			path = DTACompanion;
 			sourceTree = "<group>";
@@ -280,6 +284,7 @@
 		19ED30D427B0B09E0013766B /* App Assets */ = {
 			isa = PBXGroup;
 			children = (
+				19FBC17D27F0BE6E00B3E47D /* LootCardsData.json */,
 				19ED30AC27B0AF850013766B /* Assets.xcassets */,
 				19ED30AE27B0AF850013766B /* LaunchScreen.storyboard */,
 				19ED30B127B0AF850013766B /* Info.plist */,
@@ -291,12 +296,29 @@
 			isa = PBXGroup;
 			children = (
 				19CAB10B27BC816C001D21F6 /* Extensions */,
-				1950685E27BFE3A100E0274D /* Home Screen */,
 				1950685B27BFDE0500E0274D /* Create New Game */,
-				1950685F27BFE3B100E0274D /*  View Existing Games */,
+				1950685E27BFE3A100E0274D /* Home Screen */,
+				19FBC17A27EED62000B3E47D /* Loot Cards */,
+				19FBC17927ECCD0D00B3E47D /* Player Selection */,
 				198C9BF927C29D5700CABC75 /* Scenario Screen */,
+				1950685F27BFE3B100E0274D /* View Existing Games */,
 			);
 			path = Controllers;
+			sourceTree = "<group>";
+		};
+		19FBC17927ECCD0D00B3E47D /* Player Selection */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = "Player Selection";
+			sourceTree = "<group>";
+		};
+		19FBC17A27EED62000B3E47D /* Loot Cards */ = {
+			isa = PBXGroup;
+			children = (
+				19FBC17B27EED64800B3E47D /* LootPlayerSelectionTableViewController.swift */,
+			);
+			path = "Loot Cards";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -381,6 +403,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				19ED30B027B0AF850013766B /* LaunchScreen.storyboard in Resources */,
+				19FBC17E27F0BE6E00B3E47D /* LootCardsData.json in Resources */,
 				19ED30AD27B0AF850013766B /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -410,6 +433,7 @@
 				191BF0D927B46F15004B2161 /* CreateNewGameViewController.swift in Sources */,
 				198BD17A27BC393A0056FAC6 /* GenericNSManagedObject.swift in Sources */,
 				195B6A8827BDD46E007A2790 /* GameOverviewTableViewCell.swift in Sources */,
+				19FBC17C27EED64800B3E47D /* LootPlayerSelectionTableViewController.swift in Sources */,
 				19B2F3DD27B6DB0500EEE513 /* CharacterPickerViewCollectionViewCell.swift in Sources */,
 				19CA3BBB27B612FB008F6826 /* SegmentedControlCollectionViewCell.swift in Sources */,
 				19CAB10927BC458E001D21F6 /* Difficulty.swift in Sources */,

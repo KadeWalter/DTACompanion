@@ -153,6 +153,9 @@ extension ViewExistingGameViewController: UICollectionViewDelegate {
         self.collectionView.deselectItem(at: indexPath, animated: true)
         guard let item = self.dataSource.itemIdentifier(for: indexPath) else { return }
         switch item.rowType {
+        case .lootCards:
+            let vc = LootPlayerSelectionTableViewController(withPlayers: self.game.playersAsArray())
+            self.navigationController?.pushViewController(vc, animated: true)
         case .scoreCard:
             let vc = ScenarioManagerViewController(withGame: game)
             self.navigationController?.pushViewController(vc, animated: true)

@@ -14,6 +14,7 @@ class ScenarioManagerViewController: UIViewController {
     var collectionView: UICollectionView!
     var scenarioInfo: NewScenarioInformation?
     var campaignScore: Int = 0
+    let context = GenericNSManagedObject.GenericManagedObjectContext()
     
     init(withGame game: Game) {
         self.game = game

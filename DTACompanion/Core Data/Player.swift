@@ -15,18 +15,14 @@ class Player: GenericNSManagedObject {
     @NSManaged public var index: Int64
     @NSManaged public var lootCards: Set<LootCard>?
     
-    override class func identifier() -> String {
+    class func identifier() -> String {
         return String(describing: self)
     }
 }
 
 // MARK: - Save New Players
 extension Player {
-    class func savePlayer(withName name: String, character: String, index: Int) -> Player {
-        return savePlayer(withName: name, character: character, index: index, context: self.GenericManagedObjectContext())
-    }
-    
-    class func savePlayer(withName name: String, character: String, index: Int, context: NSManagedObjectContext) -> Player {
+    class func savePlayer(withName name: String, character: String, index: Int, inContext context: NSManagedObjectContext) -> Player {
         let player = Player(context: context)
         player.name = name
         player.character = character
@@ -43,11 +39,7 @@ extension Player {
 
 // MARK: - Fetch Players
 extension Player {
-    class func findAll() -> [Player] {
-        return findAll(withContext: self.GenericManagedObjectContext())
-    }
-    
-    class func findAll(withContext context: NSManagedObjectContext) -> [Player] {
+    class func findAll(inContext context: NSManagedObjectContext) -> [Player] {
         do {
             let request = NSFetchRequest<Player>(entityName: self.identifier())
             let sortByIndex = NSSortDescriptor(key: "index", ascending: true)
@@ -62,11 +54,7 @@ extension Player {
 
 //MARK: - Delete Players
 extension Player {
-    func deletePlayer() {
-        return deletePlayer(context: Player.GenericManagedObjectContext())
-    }
-    
-    func deletePlayer(context: NSManagedObjectContext) {
+    func deletePlayer(inContext context: NSManagedObjectContext) {
         context.delete(self)
         do {
             try context.save()
@@ -75,11 +63,7 @@ extension Player {
         }
     }
     
-    class func deleteMultiplePlayers(players: Set<Player>) {
-        deleteMultiplePlayers(players: players, context: self.GenericManagedObjectContext())
-    }
-    
-    class func deleteMultiplePlayers(players: Set<Player>, context: NSManagedObjectContext) {
+    class func deleteMultiplePlayers(players: Set<Player>, inContext context: NSManagedObjectContext) {
         for player in players {
             context.delete(player)
         }
@@ -93,11 +77,7 @@ extension Player {
 
 // MARK: - Add Loot Cards To A Player
 extension Player {
-    func addLootCard(card: LootCard) {
-        addLootCard(card: card, context: Player.GenericManagedObjectContext())
-    }
-    
-    func addLootCard(card: LootCard, context: NSManagedObjectContext) {
+    func addLootCard(card: LootCard, inContext context: NSManagedObjectContext) {
         if self.lootCards == nil {
             self.lootCards = Set<LootCard>()
         }

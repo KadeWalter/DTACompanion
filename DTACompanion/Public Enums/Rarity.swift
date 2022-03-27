@@ -12,4 +12,18 @@ public enum Rarity: String {
     case rare = "Rare"
     case epic = "Epic"
     case legendary = "Legendary"
+    case unknown = "Unknown"
+    
+    func getRarityFromShorthand(shorthand: String) -> Rarity {
+        if shorthand == "C" {
+            return Rarity.common
+        } else if shorthand == "R" {
+            return Rarity.rare
+        } else if shorthand == "E" {
+            return Rarity.epic
+        } else if shorthand == "L" {
+            return Rarity.legendary
+        }
+        return Rarity.unknown
+    }
 }

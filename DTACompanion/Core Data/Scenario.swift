@@ -20,18 +20,14 @@ class Scenario: GenericNSManagedObject {
     @NSManaged public var unspentGold: Int64
     @NSManaged public var win: Bool
     
-    override class func identifier() -> String {
+    class func identifier() -> String {
         return String(describing: self)
     }
 }
 
 // MARK: - Save A New Scenario
 extension Scenario {
-    @discardableResult class func saveNewScenario(scenarioNumber: Int, remainingSalves: Int, unspentGold: Int, unclaimedBossLoot: Int, exploration: Int, scenarioScore: Int, win: Bool, totalScore: Int) -> Scenario {
-        saveNewScenario(scenarioNumber: scenarioNumber, remainingSalves: remainingSalves, unspentGold: unspentGold, unclaimedBossLoot: unclaimedBossLoot, exploration: exploration, scenarioScore: scenarioScore, win: win, totalScore: totalScore, context: self.GenericManagedObjectContext())
-    }
-    
-    @discardableResult class func saveNewScenario(scenarioNumber: Int, remainingSalves: Int, unspentGold: Int, unclaimedBossLoot: Int, exploration: Int, scenarioScore: Int, win: Bool, totalScore: Int, context: NSManagedObjectContext) -> Scenario {
+    @discardableResult class func saveNewScenario(scenarioNumber: Int, remainingSalves: Int, unspentGold: Int, unclaimedBossLoot: Int, exploration: Int, scenarioScore: Int, win: Bool, totalScore: Int, inContext context: NSManagedObjectContext) -> Scenario {
         let scenario = Scenario(context: context)
         scenario.scenarioNumber = Int64(scenarioNumber)
         scenario.remainingSalves = Int64(remainingSalves)
@@ -55,11 +51,7 @@ extension Scenario {
 
 // MARK: - Fetch Scenarios
 extension Scenario {
-    class func findAll() -> [Scenario] {
-        return findAll(withContext: self.GenericManagedObjectContext())
-    }
-    
-    class func findAll(withContext context: NSManagedObjectContext) -> [Scenario] {
+    class func findAll(inContext context: NSManagedObjectContext) -> [Scenario] {
         do {
             let request = NSFetchRequest<Scenario>(entityName: self.identifier())
             let sortByDate = NSSortDescriptor(key: "dateCreated", ascending: true)
@@ -74,11 +66,7 @@ extension Scenario {
 
 // MARK: - Delete A Scenario
 extension Scenario {
-    @discardableResult func deleteScenario() -> Bool {
-        return deleteScenario(context: Scenario.GenericManagedObjectContext())
-    }
-    
-    @discardableResult func deleteScenario(context: NSManagedObjectContext) -> Bool {
+    @discardableResult func deleteScenario(inContext context: NSManagedObjectContext) -> Bool {
         var scenarioDeleted: Bool = false
         context.delete(self)
         do {
@@ -90,11 +78,7 @@ extension Scenario {
         return scenarioDeleted
     }
     
-    class func deleteMultipleScenarios(scenarios: Set<Scenario>) {
-        deleteMultipleScenarios(scenarios: scenarios, context: self.GenericManagedObjectContext())
-    }
-    
-    class func deleteMultipleScenarios(scenarios: Set<Scenario>, context: NSManagedObjectContext) {
+    class func deleteMultipleScenarios(scenarios: Set<Scenario>, inContext context: NSManagedObjectContext) {
         for scenario in scenarios {
             context.delete(scenario)
         }

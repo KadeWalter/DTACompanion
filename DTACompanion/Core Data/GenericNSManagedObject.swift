@@ -9,12 +9,6 @@ import Foundation
 import CoreData
 
 class GenericNSManagedObject: NSManagedObject {
-    
-    // Identifier used for generics when getting entity names
-    class func identifier() -> String {
-        return ""
-    }
-    
     // Function for getting managed object context
     class func GenericManagedObjectContext() -> NSManagedObjectContext {
         guard let appDel = AppDelegate.sharedAppDelegate else {
@@ -22,5 +16,4 @@ class GenericNSManagedObject: NSManagedObject {
         }
         return appDel.persistentContainer.viewContext
     }
-    
 }

@@ -1,0 +1,25 @@
+{
+    "lootCards":
+    [
+        {
+            "title": "Test Card A (C)",
+            "desc": "You may play test card a to restore health.",
+            "rarity": "C"
+        },
+        {
+            "title": "Test Card B (E)",
+            "desc": "You may play test card a to restore health.",
+            "rarity": "E"
+        },
+        {
+            "title": "Test Card C (R)",
+            "desc": "You may play test card a to restore health.",
+            "rarity": "R"
+        },
+        {
+            "title": "Test Card D (L)",
+            "desc": "You may play test card a to restore health.",
+            "rarity": "L"
+        }
+    ]
+}

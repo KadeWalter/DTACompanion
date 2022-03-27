@@ -12,7 +12,7 @@ protocol SwitchListCellUpdatedDelegate: AnyObject {
 }
 
 class SwitchListCollectionViewCell: UICollectionViewListCell {
-    static let identifier = String(describing: self)
+    static let identifier = String(describing: SwitchListCollectionViewCell.self)
 }
 
 struct SwitchListContentConfiguration: UIContentConfiguration, Equatable {

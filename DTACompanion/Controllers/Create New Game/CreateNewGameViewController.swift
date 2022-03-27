@@ -12,6 +12,7 @@ class CreateNewGameViewController: UIViewController {
     var collectionView: UICollectionView!
     var dataSource: DataSource!
     var gameInfo = GameInformation()
+    private let context = GenericNSManagedObject.GenericManagedObjectContext()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -83,7 +84,7 @@ class CreateNewGameViewController: UIViewController {
             }
             
             // Save the game to core data.
-            Game.saveNewGame(teamName: teamName, numberOfPlayers: numberOfPlayers, legacyMode: legacyMode, difficulty: diff, players: players, dateCreated: Date())
+            Game.saveNewGame(teamName: teamName, numberOfPlayers: numberOfPlayers, legacyMode: legacyMode, difficulty: diff, players: players, dateCreated: Date(), inContext: self.context)
             self.navigationController?.popViewController(animated: true)
         }
     }
@@ -95,7 +96,7 @@ class CreateNewGameViewController: UIViewController {
             if playerInfo.name == "" || playerInfo.character == "" {
                 return []
             }
-            playerData.insert(Player.savePlayer(withName: playerInfo.name, character: playerInfo.character, index: i))
+            playerData.insert(Player.savePlayer(withName: playerInfo.name, character: playerInfo.character, index: i, inContext: self.context))
         }
         return playerData
     }
