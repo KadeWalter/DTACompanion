@@ -9,7 +9,7 @@ import Foundation
 import CoreData
 
 @objc(LootCard)
-class LootCard: GenericNSManagedObject {
+class LootCard: NSManagedObject{
     @NSManaged public var desc: String
     @NSManaged public var title: String
     @NSManaged public var rarity: String
@@ -37,12 +37,7 @@ extension LootCard {
             lootCard.rarity = card.rarity
             lootCard.game = game
         }
-        
-        do {
-            try context.save()
-        } catch {
-            fatalError("Failed to save loot cards.")
-        }
+        DTAStack.saveContext()
     }
 }
  
@@ -52,12 +47,7 @@ extension LootCard {
         for lootCard in game.lootCards {
             context.delete(lootCard)
         }
-        
-        do {
-            try context.save()
-        } catch {
-            fatalError("Failed to delete loot cards.")
-        }
+        DTAStack.saveContext()
     }
 }
 

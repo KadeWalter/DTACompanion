@@ -57,7 +57,7 @@ class LootPlayerSelectionTableViewController: UITableViewController {
         snapShot.appendItems(playerRows, toSection: .players)
         
         // Create the overall loot row.
-        snapShot.appendItems([Item(title: "All Player Loot")], toSection: .overallLoot)
+        snapShot.appendItems([Item(title: "Active Loot Cards")], toSection: .overallLoot)
         
         self.dataSource.apply(snapShot, animatingDifferences: false)
     }

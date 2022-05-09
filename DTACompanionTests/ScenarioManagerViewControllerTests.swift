@@ -10,10 +10,21 @@ import XCTest
 import CoreData
 
 class ScenarioManagerViewControllerTests: XCTestCase {
+    
+    var context: NSManagedObjectContext?
+    
+    override func setUp() {
+        super.setUp()
+        self.context = CoreDataTestStack().context
+    }
+    
+    override func tearDown() {
+        self.context = nil
+        super.tearDown()
+    }
 
     func testGetTotalScenarioScore() {
-        let context = CoreDataTestStack().persistentContainer.viewContext
-        let game = Game(context: context)
+        let game = Game(context: context!)
         
         // Score with win enabled. Total = 50.
         let vc = ScenarioManagerViewController(withGame: game)
@@ -28,26 +39,25 @@ class ScenarioManagerViewControllerTests: XCTestCase {
     }
 
     func testCalculateCampaignScore() {
-        let context = CoreDataTestStack().persistentContainer.viewContext
-        let game = createGame(context: context)
-        let scen1 = createScenario(withTotal: 20, context: context)
-        let scen2 = createScenario(withTotal: 30, context: context)
+        let game = createGame(context: context!)
+        let scen1 = createScenario(withTotal: 20, context: context!)
+        let scen2 = createScenario(withTotal: 30, context: context!)
         game.scenarios = [scen1, scen2]
-        try! context.save()
+        try! context!.save()
         
         let vc = ScenarioManagerViewController(withGame: game)
         vc.calculateCampaignTotal()
         XCTAssertEqual(vc.campaignScore, 50)
         
-        scen1.deleteScenario(context: context)
+        scen1.deleteScenario(inContext: context!)
+        try! context!.save()
         vc.calculateCampaignTotal()
         XCTAssertEqual(vc.campaignScore, 30)
     }
     
     func testValueForRow() {
-        let context = CoreDataTestStack().persistentContainer.viewContext
-        let game = createGame(context: context)
-        let scen = createScenario(withTotal: 20, context: context)
+        let game = createGame(context: context!)
+        let scen = createScenario(withTotal: 20, context: context!)
         scen.scenarioNumber = 10
         scen.remainingSalves = 11
         scen.unspentGold = 12
@@ -55,7 +65,7 @@ class ScenarioManagerViewControllerTests: XCTestCase {
         scen.fullExploration = 14
         scen.scenarioScore = 15
         game.scenarios = [scen]
-        try! context.save()
+        try! context!.save()
         
         let vc = ScenarioManagerViewController(withGame: game)
         vc.scenarioInfo = ScenarioManagerViewController.NewScenarioInformation(scenarioNumber: 1, remainingSalves: 2, unspentGold: 3, unclaimedBossLoot: 4, exploration: 5, scenarioScore: 6, wonScenario: true, totalScore: 7)

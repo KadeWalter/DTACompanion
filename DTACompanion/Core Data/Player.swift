@@ -9,7 +9,7 @@ import Foundation
 import CoreData
 
 @objc(Player)
-class Player: GenericNSManagedObject {
+class Player: NSManagedObject {
     @NSManaged public var name: String
     @NSManaged public var character: String
     @NSManaged public var index: Int64
@@ -27,12 +27,8 @@ extension Player {
         player.name = name
         player.character = character
         player.index = Int64(index)
+        DTAStack.saveContext()
         
-        do {
-            try context.save()
-        } catch {
-            fatalError("Unexpected Error: \(error)")
-        }
         return player
     }
 }
@@ -56,22 +52,14 @@ extension Player {
 extension Player {
     func deletePlayer(inContext context: NSManagedObjectContext) {
         context.delete(self)
-        do {
-            try context.save()
-        } catch {
-            fatalError("Unable to delete player.")
-        }
+        DTAStack.saveContext()
     }
     
     class func deleteMultiplePlayers(players: Set<Player>, inContext context: NSManagedObjectContext) {
         for player in players {
             context.delete(player)
         }
-        do {
-            try context.save()
-        } catch {
-            fatalError("Error deleting all players.")
-        }
+        DTAStack.saveContext()
     }
 }
 
@@ -82,11 +70,6 @@ extension Player {
             self.lootCards = Set<LootCard>()
         }
         self.lootCards?.insert(card)
-        
-        do {
-            try context.save()
-        } catch {
-            fatalError("Error saving loot cards")
-        }
+        DTAStack.saveContext()
     }
 }

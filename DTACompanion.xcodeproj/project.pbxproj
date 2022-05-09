@@ -22,7 +22,7 @@
 		1953F31D27BF27A000F84D8E /* GameTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1953F31C27BF27A000F84D8E /* GameTests.swift */; };
 		1953F31F27BF28D600F84D8E /* CoreDataTestStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1953F31E27BF28D600F84D8E /* CoreDataTestStack.swift */; };
 		195B6A8827BDD46E007A2790 /* GameOverviewTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 195B6A8727BDD46E007A2790 /* GameOverviewTableViewCell.swift */; };
-		198BD17A27BC393A0056FAC6 /* GenericNSManagedObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 198BD17927BC393A0056FAC6 /* GenericNSManagedObject.swift */; };
+		198B660028171AB100DC18F6 /* DTAStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 198B65FF28171AB100DC18F6 /* DTAStack.swift */; };
 		198C9BFB27C29D8500CABC75 /* ScenarioManagerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 198C9BFA27C29D8500CABC75 /* ScenarioManagerViewController.swift */; };
 		19A216B127B62850000A24FE /* Characters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19A216B027B62850000A24FE /* Characters.swift */; };
 		19B2F3DD27B6DB0500EEE513 /* CharacterPickerViewCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19B2F3DC27B6DB0500EEE513 /* CharacterPickerViewCollectionViewCell.swift */; };
@@ -74,7 +74,7 @@
 		1953F31C27BF27A000F84D8E /* GameTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameTests.swift; sourceTree = "<group>"; };
 		1953F31E27BF28D600F84D8E /* CoreDataTestStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataTestStack.swift; sourceTree = "<group>"; };
 		195B6A8727BDD46E007A2790 /* GameOverviewTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOverviewTableViewCell.swift; sourceTree = "<group>"; };
-		198BD17927BC393A0056FAC6 /* GenericNSManagedObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericNSManagedObject.swift; sourceTree = "<group>"; };
+		198B65FF28171AB100DC18F6 /* DTAStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DTAStack.swift; sourceTree = "<group>"; };
 		198C9BFA27C29D8500CABC75 /* ScenarioManagerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScenarioManagerViewController.swift; sourceTree = "<group>"; };
 		19A216B027B62850000A24FE /* Characters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Characters.swift; sourceTree = "<group>"; };
 		19B2F3DC27B6DB0500EEE513 /* CharacterPickerViewCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacterPickerViewCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -219,7 +219,7 @@
 			isa = PBXGroup;
 			children = (
 				19ED30A927B0AF840013766B /* DTACompanion.xcdatamodeld */,
-				198BD17927BC393A0056FAC6 /* GenericNSManagedObject.swift */,
+				198B65FF28171AB100DC18F6 /* DTAStack.swift */,
 				19DB18A927BC1A9C0076AE52 /* Game.swift */,
 				19CAB10627BC43A6001D21F6 /* Player.swift */,
 				19E0789C27BDBA0800187FCE /* Scenario.swift */,
@@ -366,7 +366,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1320;
+				LastSwiftUpdateCheck = 1330;
 				LastUpgradeCheck = 1320;
 				TargetAttributes = {
 					19ED309C27B0AF840013766B = {
@@ -431,7 +431,6 @@
 				19CAB10527BC416C001D21F6 /* UINavigationControllerExtension.swift in Sources */,
 				19F35A6F27CC297100A9F438 /* ScenarioManagerCellRegistration.swift in Sources */,
 				191BF0D927B46F15004B2161 /* CreateNewGameViewController.swift in Sources */,
-				198BD17A27BC393A0056FAC6 /* GenericNSManagedObject.swift in Sources */,
 				195B6A8827BDD46E007A2790 /* GameOverviewTableViewCell.swift in Sources */,
 				19FBC17C27EED64800B3E47D /* LootPlayerSelectionTableViewController.swift in Sources */,
 				19B2F3DD27B6DB0500EEE513 /* CharacterPickerViewCollectionViewCell.swift in Sources */,
@@ -439,6 +438,7 @@
 				19CAB10927BC458E001D21F6 /* Difficulty.swift in Sources */,
 				19A216B127B62850000A24FE /* Characters.swift in Sources */,
 				19DB18AA27BC1A9C0076AE52 /* Game.swift in Sources */,
+				198B660028171AB100DC18F6 /* DTAStack.swift in Sources */,
 				19F35A6D27CC294A00A9F438 /* ScenarioManagerDelegateFunctions.swift in Sources */,
 				1950685D27BFDECF00E0274D /* CreateNewGameCellRegistrations.swift in Sources */,
 				19CAB10D27BC92A7001D21F6 /* Rarity.swift in Sources */,
@@ -541,7 +541,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -596,7 +596,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;

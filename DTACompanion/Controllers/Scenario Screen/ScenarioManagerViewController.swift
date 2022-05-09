@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import CoreData
 
 class ScenarioManagerViewController: UIViewController {
     
@@ -14,7 +15,7 @@ class ScenarioManagerViewController: UIViewController {
     var collectionView: UICollectionView!
     var scenarioInfo: NewScenarioInformation?
     var campaignScore: Int = 0
-    let context = GenericNSManagedObject.GenericManagedObjectContext()
+    let context = DTAStack.context
     
     init(withGame game: Game) {
         self.game = game

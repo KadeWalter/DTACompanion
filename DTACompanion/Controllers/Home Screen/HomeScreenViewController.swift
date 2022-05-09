@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import CoreData
 
 protocol DeleteGameProtocol: AnyObject {
     func deleteGame(forIndexPath indexPath: IndexPath)
@@ -18,7 +19,7 @@ class HomeScreenViewController: UIViewController {
     private let tableView = UITableView(frame: .zero, style: .insetGrouped)
     private var dataSource: DataSource!
     private var allGames: [Game] = []
-    private let context = GenericNSManagedObject.GenericManagedObjectContext()
+    private let context = DTAStack.context
     
     override func viewWillAppear(_ animated: Bool) {
         self.allGames = Game.findAll(inContext: self.context)

@@ -11,49 +11,55 @@ import CoreData
 
 class PlayerTests: XCTestCase {
     
+    var context: NSManagedObjectContext?
+    
+    override func setUp() {
+        super.setUp()
+        self.context = CoreDataTestStack().context
+    }
+    
+    override func tearDown() {
+        self.context = nil
+        super.tearDown()
+    }
+    
     func testSavePlayer() {
-        let context = CoreDataTestStack().persistentContainer.viewContext
+        let player1 = Player.savePlayer(withName: "Tester 2", character: "Character 1", index: 1, inContext: context!)
+        let player2 = Player.savePlayer(withName: "Tester 1", character: "Character 2", index: 0, inContext: context!)
         
-        let player1 = Player.savePlayer(withName: "Tester 2", character: "Character 1", index: 1, context: context)
-        let player2 = Player.savePlayer(withName: "Tester 1", character: "Character 2", index: 0, context: context)
-        
-        let players = Player.findAll(withContext: context)
+        let players = Player.findAll(inContext: context!)
         XCTAssertEqual(players.count, 2)
         XCTAssertEqual(players[0], player2)
         XCTAssertEqual(players[1], player1)
     }
     
     func testDeletePlayer() {
-        let context = CoreDataTestStack().persistentContainer.viewContext
+        let player1 = Player.savePlayer(withName: "Tester 2", character: "Character 1", index: 1, inContext: context!)
+        let player2 = Player.savePlayer(withName: "Tester 1", character: "Character 2", index: 0, inContext: context!)
         
-        let player1 = Player.savePlayer(withName: "Tester 2", character: "Character 1", index: 1, context: context)
-        let player2 = Player.savePlayer(withName: "Tester 1", character: "Character 2", index: 0, context: context)
-        
-        var players = Player.findAll(withContext: context)
+        var players = Player.findAll(inContext: context!)
         XCTAssertEqual(players.count, 2)
         XCTAssertEqual(players[0], player2)
         XCTAssertEqual(players[1], player1)
         
-        players[0].deletePlayer(context: context)
-        players = Player.findAll(withContext: context)
+        players[0].deletePlayer(inContext: context!)
+        players = Player.findAll(inContext: context!)
         XCTAssertEqual(players.count, 1)
         XCTAssertEqual(players[0], player1)
     }
     
     func testDeleteMultiplePlayers() {
-        let context = CoreDataTestStack().persistentContainer.viewContext
+        let player1 = Player.savePlayer(withName: "Tester 2", character: "Character 1", index: 1, inContext: context!)
+        let player2 = Player.savePlayer(withName: "Tester 1", character: "Character 2", index: 0, inContext: context!)
         
-        let player1 = Player.savePlayer(withName: "Tester 2", character: "Character 1", index: 1, context: context)
-        let player2 = Player.savePlayer(withName: "Tester 1", character: "Character 2", index: 0, context: context)
-        
-        var players = Player.findAll(withContext: context)
+        var players = Player.findAll(inContext: context!)
         XCTAssertEqual(players.count, 2)
         XCTAssertEqual(players[0], player2)
         XCTAssertEqual(players[1], player1)
         
-        Player.deleteMultiplePlayers(players: Set(players), context: context)
+        Player.deleteMultiplePlayers(players: Set(players), inContext: context!)
         
-        players = Player.findAll(withContext: context)
+        players = Player.findAll(inContext: context!)
         XCTAssertEqual(players.count, 0)
     }
 }

@@ -6,13 +6,14 @@
 //
 
 import UIKit
+import CoreData
 
 class CreateNewGameViewController: UIViewController {
     
     var collectionView: UICollectionView!
     var dataSource: DataSource!
     var gameInfo = GameInformation()
-    private let context = GenericNSManagedObject.GenericManagedObjectContext()
+    let context = DTAStack.context
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -96,7 +97,7 @@ class CreateNewGameViewController: UIViewController {
             if playerInfo.name == "" || playerInfo.character == "" {
                 return []
             }
-            playerData.insert(Player.savePlayer(withName: playerInfo.name, character: playerInfo.character, index: i, inContext: self.context))
+            playerData.insert(Player.savePlayer(withName: playerInfo.name, character: playerInfo.character, index: i, inContext: context))
         }
         return playerData
     }

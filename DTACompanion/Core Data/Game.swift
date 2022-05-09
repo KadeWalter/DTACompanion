@@ -9,7 +9,7 @@ import Foundation
 import CoreData
 
 @objc(Game)
-class Game: GenericNSManagedObject {
+class Game: NSManagedObject {
     @NSManaged public var teamName: String
     @NSManaged public var numberOfPlayers: Int64
     @NSManaged public var legacyMode: Bool
@@ -43,12 +43,7 @@ class Game: GenericNSManagedObject {
             self.scenarios = Set<Scenario>()
         }
         self.scenarios?.insert(scenario)
-        
-        do {
-            try self.managedObjectContext?.save()
-        } catch {
-            fatalError("Error saving scenario to game.")
-        }
+        DTAStack.saveContext()
     }
 }
 
@@ -64,12 +59,7 @@ extension Game {
         game.players = players
         
         LootCard.saveLootCardsJSON(toGame: game, inContext: context)
-        
-        do {
-            try context.save()
-        } catch {
-            fatalError("Error saving game: \(error)")
-        }
+        DTAStack.saveContext()
     }
 }
 
@@ -91,20 +81,12 @@ extension Game {
 // MARK: - Delete A Game
 extension Game {
     @discardableResult func deleteGame(inContext context: NSManagedObjectContext) -> Bool {
-        var gameDeleted: Bool = false
-        
         // Delete any players and scenarios tied to the game.
         Player.deleteMultiplePlayers(players: self.players, inContext: context)
         Scenario.deleteMultipleScenarios(scenarios: self.scenarios ?? [], inContext: context)
         LootCard.deleteLootCards(fromGame: self, inContext: context)
         
         context.delete(self)
-        do {
-            try context.save()
-            gameDeleted = true
-        } catch {
-            fatalError("Unable to delete game.")
-        }
-        return gameDeleted
+        return DTAStack.saveContext()
     }
 }

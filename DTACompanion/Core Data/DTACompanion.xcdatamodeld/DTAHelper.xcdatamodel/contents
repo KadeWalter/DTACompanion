@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="20086" systemVersion="21D62" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="20086" systemVersion="21E258" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="Game" representedClassName="Game" syncable="YES">
         <attribute name="difficulty" attributeType="String"/>
         <attribute name="latestUpdate" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="legacyMode" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="numberOfPlayers" attributeType="Integer 64" defaultValueString="1" usesScalarValueType="YES"/>
         <attribute name="teamName" attributeType="String"/>
-        <relationship name="lootCards" toMany="YES" deletionRule="Nullify" destinationEntity="LootCard" inverseName="game" inverseEntity="LootCard"/>
-        <relationship name="players" toMany="YES" deletionRule="Nullify" destinationEntity="Player" inverseName="game" inverseEntity="Player"/>
-        <relationship name="scenarios" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Scenario" inverseName="game" inverseEntity="Scenario"/>
+        <relationship name="lootCards" toMany="YES" deletionRule="Cascade" destinationEntity="LootCard" inverseName="game" inverseEntity="LootCard"/>
+        <relationship name="players" toMany="YES" deletionRule="Cascade" destinationEntity="Player" inverseName="game" inverseEntity="Player"/>
+        <relationship name="scenarios" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Scenario" inverseName="game" inverseEntity="Scenario"/>
     </entity>
     <entity name="LootCard" representedClassName="LootCard" syncable="YES">
         <attribute name="desc" attributeType="String"/>
@@ -37,9 +37,9 @@
         <relationship name="game" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Game" inverseName="scenarios" inverseEntity="Game"/>
     </entity>
     <elements>
-        <element name="Game" positionX="-63" positionY="-18" width="128" height="149"/>
-        <element name="LootCard" positionX="-36" positionY="54" width="128" height="104"/>
-        <element name="Player" positionX="-54" positionY="27" width="128" height="104"/>
-        <element name="Scenario" positionX="-27" positionY="63" width="128" height="179"/>
+        <element name="Game" positionX="-63" positionY="-18" width="128" height="163"/>
+        <element name="LootCard" positionX="-36" positionY="54" width="128" height="118"/>
+        <element name="Player" positionX="-54" positionY="27" width="128" height="118"/>
+        <element name="Scenario" positionX="-27" positionY="63" width="128" height="193"/>
     </elements>
 </model>

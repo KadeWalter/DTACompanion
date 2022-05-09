@@ -9,7 +9,7 @@ import Foundation
 import CoreData
 
 @objc(Scenario)
-class Scenario: GenericNSManagedObject {
+class Scenario: NSManagedObject {
     @NSManaged public var dateCreated: Date
     @NSManaged public var fullExploration: Int64
     @NSManaged public var remainingSalves: Int64
@@ -38,12 +38,7 @@ extension Scenario {
         scenario.totalScore = Int64(totalScore)
         scenario.win = win
         scenario.dateCreated = Date()
-        
-        do {
-            try context.save()
-        } catch {
-            fatalError("Error saving game: \(error)")
-        }
+        DTAStack.saveContext()
         
         return scenario
     }
@@ -67,26 +62,14 @@ extension Scenario {
 // MARK: - Delete A Scenario
 extension Scenario {
     @discardableResult func deleteScenario(inContext context: NSManagedObjectContext) -> Bool {
-        var scenarioDeleted: Bool = false
         context.delete(self)
-        do {
-            try context.save()
-            scenarioDeleted = true
-        } catch {
-            fatalError("Unable to delete game.")
-        }
-        return scenarioDeleted
+        return DTAStack.saveContext()
     }
     
     class func deleteMultipleScenarios(scenarios: Set<Scenario>, inContext context: NSManagedObjectContext) {
         for scenario in scenarios {
             context.delete(scenario)
         }
-        
-        do {
-            try context.save()
-        } catch {
-            fatalError("Error deleting all players.")
-        }
+        DTAStack.saveContext()
     }
 }
