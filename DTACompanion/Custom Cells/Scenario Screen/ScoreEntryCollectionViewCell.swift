@@ -125,6 +125,7 @@ class ScoreEntryContentView: UIView, UIContentView, UITextFieldDelegate {
         tf.placeholder = "0"
         tf.textAlignment = .right
         tf.delegate = self
+        tf.addDoneToToolBar()
         return tf
     }
     

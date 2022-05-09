@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		191BF0D927B46F15004B2161 /* CreateNewGameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 191BF0D827B46F15004B2161 /* CreateNewGameViewController.swift */; };
+		191EF5CF282981E80062A116 /* UITextFieldExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 191EF5CE282981E80062A116 /* UITextFieldExtension.swift */; };
 		192F448027C3433B00C3C180 /* ScoreEntryCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 192F447F27C3433B00C3C180 /* ScoreEntryCollectionViewCell.swift */; };
 		1931422D27BA0C4300752221 /* DifficultyPickerViewCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1931422C27BA0C4300752221 /* DifficultyPickerViewCollectionViewCell.swift */; };
 		1931423227BAEDB400752221 /* SwitchListCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1931423127BAEDB400752221 /* SwitchListCollectionViewCell.swift */; };
@@ -60,6 +61,7 @@
 
 /* Begin PBXFileReference section */
 		191BF0D827B46F15004B2161 /* CreateNewGameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateNewGameViewController.swift; sourceTree = "<group>"; };
+		191EF5CE282981E80062A116 /* UITextFieldExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITextFieldExtension.swift; sourceTree = "<group>"; };
 		192F447F27C3433B00C3C180 /* ScoreEntryCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreEntryCollectionViewCell.swift; sourceTree = "<group>"; };
 		1931422C27BA0C4300752221 /* DifficultyPickerViewCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DifficultyPickerViewCollectionViewCell.swift; sourceTree = "<group>"; };
 		1931423127BAEDB400752221 /* SwitchListCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchListCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -211,6 +213,7 @@
 			isa = PBXGroup;
 			children = (
 				19CAB10427BC416C001D21F6 /* UINavigationControllerExtension.swift */,
+				191EF5CE282981E80062A116 /* UITextFieldExtension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -429,6 +432,7 @@
 				19ED30A327B0AF840013766B /* SceneDelegate.swift in Sources */,
 				1950685A27BFDDF700E0274D /* CreateNewGameDelegateFunctions.swift in Sources */,
 				19CAB10527BC416C001D21F6 /* UINavigationControllerExtension.swift in Sources */,
+				191EF5CF282981E80062A116 /* UITextFieldExtension.swift in Sources */,
 				19F35A6F27CC297100A9F438 /* ScenarioManagerCellRegistration.swift in Sources */,
 				191BF0D927B46F15004B2161 /* CreateNewGameViewController.swift in Sources */,
 				195B6A8827BDD46E007A2790 /* GameOverviewTableViewCell.swift in Sources */,

@@ -120,7 +120,7 @@ extension ViewExistingGameViewController {
         for i in 0..<Int(self.game.numberOfPlayers) {
             // Create the player header row:
             var playerHeader = ExistingGameData(rowType: .playerHeader, hasChildren: true)
-            playerHeader.playerParentId = i
+            playerHeader.playerParentId = i + 1
             // Append the player header to the player snapshot:
             playerSnapshot.append([playerHeader])
             
